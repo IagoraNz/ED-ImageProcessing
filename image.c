@@ -37,68 +37,94 @@ void free_image_rgb(ImageRGB *image) {
     free(image);
 }
 
-ImageRGB *transpose_rgb(const ImageRGB *image){
-    ImageRGB *transposed = (ImageRGB*)malloc(sizeof(ImageRGB));
-    transposed->dim.altura = image->dim.largura;
-    transposed->dim.largura = image->dim.altura;
-    transposed->pixels = (PixelRGB*)malloc((transposed->dim.altura * transposed->dim.largura) * sizeof(PixelRGB));
-    int i, j;
-    for (i = 0; i < image->dim.altura; i++) {
-        for (j = 0; j < image->dim.largura; j++) {
-            transposed->pixels[j * transposed->dim.largura + i].blue = image->pixels[i * image->dim.largura + j].blue;
-            transposed->pixels[j * transposed->dim.largura + i].red = image->pixels[i * image->dim.largura + j].red;
-            transposed->pixels[j * transposed->dim.largura + i].green = image->pixels[i * image->dim.largura + j].green;
+void histogramatile(const ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height, int *histogramared, int *histogramagreen, int *histogramblue){
+    int i, j, idx;
+    
+    for(i = 0; i < 256; i++){
+        histogramared[i] = 0;
+        histogramagreen[i] = 0;
+        histogramblue[i] = 0;
+    }
+    for(i = tileY; i < tileY + tile_height && i < image->dim.altura; i++){
+        for(j = tileX; j < tileX + tile_width && j < image->dim.largura; j++){
+            idx = i * image->dim.largura + j;
+            histogramared[image->pixels[idx].red]++;
+            histogramagreen[image->pixels[idx].green]++;
+            histogramblue[image->pixels[idx].blue]++;
         }
     }
-    return transposed;
 }
 
+void histocumulativo(int *histograma, int *histocumulativo, int total_pixels, float clip_limit){
+    int excesso = 0, i, dist;
+    for(i = 0; i < 256; i++){
+        if(histograma[i] > clip_limit){
+            excesso += histograma[i] - clip_limit;
+            histograma[i] = clip_limit;
+        }
+    }
 
-int cmpfunc(const void *a, const void *b) {
-    return (*(int *)a - *(int *)b);
+    dist = excesso / 256;
+    for(i = 0; i < 256; i++){
+        histograma[i] += dist;
+    }
+
+    histocumulativo[0] = histograma[0];
+    for(i = 1; i < 256; i++){
+        histocumulativo[i] = histocumulativo[i - 1] + histograma[i];
+    }
+
+    for(i = 0; i < 256; i++){
+        histocumulativo[i] = histocumulativo[i] * 255 / total_pixels;
+    }
 }
 
-ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size) {
-    ImageRGB *imageblur = (ImageRGB *)malloc(sizeof(ImageRGB));
-    imageblur->dim.altura = image->dim.altura;
-    imageblur->dim.largura = image->dim.largura;
-    imageblur->pixels = (PixelRGB *)malloc(sizeof(PixelRGB) * image->dim.altura * image->dim.largura);
+void aplicarClahe(ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height, int *histocumulativo_red, int *histocumulativo_green, int *histocumulativo_blue){
+    int i, j, idx;
+    for(i = tileY; i < tileY + tile_height && i < image->dim.altura; i++){
+        for(j = tileX; j < tileX + tile_width && j < image->dim.largura; j++){
+            idx = i * image->dim.largura + j;
+            image->pixels[idx].red = histocumulativo_red[image->pixels[idx].red];
+            image->pixels[idx].green = histocumulativo_green[image->pixels[idx].green];
+            image->pixels[idx].blue = histocumulativo_blue[image->pixels[idx].blue];
+        }
+    }
+}
 
-    int offset = kernel_size / 2, i, j, k, l, contador, idx, linha, coluna;
-    for(i = 0; i < image->dim.altura; i++){
+ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height){
+    int i, j, tileX, tileY;
+
+    ImageRGB *imageclahe = (ImageRGB *)malloc(sizeof(ImageRGB));
+    imageclahe->dim.altura = image->dim.altura;
+    imageclahe->dim.largura = image->dim.largura;
+    imageclahe->pixels = (PixelRGB *)malloc(sizeof(PixelRGB) * image->dim.altura * image->dim.largura);
+
+    int histoRed[256], histoGreen[256], histoBlue[256];
+    int histocumulativo_red[256], histocumulativo_green[256], histocumulativo_blue[256], totalPixels = tile_width * tile_height;
+    float clipLimite = totalPixels / 256.0 * 2.0;
+
+    for(i = 0; i < image->dim.altura; i++) {
         for(j = 0; j < image->dim.largura; j++){
-            contador = 0;
-            int reds[kernel_size * kernel_size], greens[kernel_size * kernel_size], blues[kernel_size * kernel_size];
-            for(k = -offset; k <= offset; k++){
-                for(l = -offset; l <= offset; l++){
-                    linha = i + k;
-                    coluna = j + l;
-                    if(linha >= 0 && linha < image->dim.altura && coluna >= 0 && coluna < image->dim.largura){
-                        idx = linha * image->dim.largura + coluna;
-                        reds[contador] = image->pixels[idx].red;
-                        greens[contador] = image->pixels[idx].green;
-                        blues[contador] = image->pixels[idx].blue;
-                        contador++;
-                    }
-                }
-            }
-
-            qsort(reds, contador, sizeof(int), cmpfunc);
-            qsort(greens, contador, sizeof(int), cmpfunc);
-            qsort(blues, contador, sizeof(int), cmpfunc);
-
-            imageblur->pixels[i * image->dim.largura + j].red = reds[contador / 2];
-            imageblur->pixels[i * image->dim.largura + j].green = greens[contador / 2];
-            imageblur->pixels[i * image->dim.largura + j].blue = blues[contador / 2];
+            imageclahe->pixels[i * image->dim.largura + j] = image->pixels[i * image->dim.largura + j];
         }
     }
 
-    return imageblur;
+    for(tileY = 0; tileY < image->dim.altura; tileY += tile_height){
+        for(tileX = 0; tileX < image->dim.largura; tileX += tile_width){
+            histogramatile(image, tileX, tileY, tile_width, tile_height, histoRed, histoGreen, histoBlue);
+            histocumulativo(histoRed, histocumulativo_red, totalPixels, clipLimite);
+            histocumulativo(histoGreen, histocumulativo_green, totalPixels, clipLimite);
+            histocumulativo(histoBlue, histocumulativo_blue, totalPixels, clipLimite);
+            aplicarClahe(imageclahe, tileX, tileY, tile_width, tile_height, histocumulativo_red, histocumulativo_green, histocumulativo_blue);
+        }
+    }
+
+    return imageclahe;
 }
 
-int main() {
+int main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
-    if (arq == NULL) {
+    if(arq == NULL){
         perror("Erro ao abrir o arquivo");
         return 1;
     }
@@ -114,7 +140,6 @@ int main() {
         printf("1 - Criar imagem RGB\n");
         printf("2 - CLAHE RGB\n");
         printf("3 - RGB no blur\n");
-        printf("4 - TranposeRGB\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -131,6 +156,21 @@ int main() {
                 printf("Imagem criada com sucesso!\n");
                 break;
             case 2:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    int tile_width, tile_height;
+                    do{
+                        printf("Digite o tamanho da tile (largura): ");
+                        scanf("%d", &tile_width);
+                        printf("Digite o tamanho da tile (altura): ");
+                        scanf("%d", &tile_height);
+                    }while(tile_width <= 0 || tile_height <= 0);
+                    ImageRGB *novo = clahe_rgb(image, tile_width, tile_height);
+                    exibir_image(novo);
+                    free_image_rgb(novo);
+                }
                 break;
             case 3:
                 if(!image){
@@ -149,25 +189,12 @@ int main() {
                     free_image_rgb(new_image);
                 }
                 break;
-            case 4:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    ImageRGB *transposed = transpose_rgb(image);
-                    system("PAUSE");
-                    exibir_image(transposed);
-                    transposed = transpose_rgb(transposed);
-                    system("PAUSE");
-                    exibir_image(transposed);
-                }
-                break;
             default:
                 printf("Opcao invalida!\n");
         }
-    } while (opc != 0);
+    }while(opc != 0);
 
-    if (image != NULL) {
+    if(image != NULL){
         free_image_rgb(image);
     }
     fclose(arq);
