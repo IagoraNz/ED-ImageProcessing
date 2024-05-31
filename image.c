@@ -37,6 +37,23 @@ void free_image_rgb(ImageRGB *image) {
     free(image);
 }
 
+ImageRGB *transpose_rgb(const ImageRGB *image){
+    ImageRGB *transposed = (ImageRGB*)malloc(sizeof(ImageRGB));
+    transposed->dim.altura = image->dim.largura;
+    transposed->dim.largura = image->dim.altura;
+    transposed->pixels = (PixelRGB*)malloc((transposed->dim.altura * transposed->dim.largura) * sizeof(PixelRGB));
+    int i, j;
+    for (i = 0; i < image->dim.altura; i++) {
+        for (j = 0; j < image->dim.largura; j++) {
+            transposed->pixels[j * transposed->dim.largura + i].blue = image->pixels[i * image->dim.largura + j].blue;
+            transposed->pixels[j * transposed->dim.largura + i].red = image->pixels[i * image->dim.largura + j].red;
+            transposed->pixels[j * transposed->dim.largura + i].green = image->pixels[i * image->dim.largura + j].green;
+        }
+    }
+    return transposed;
+}
+
+
 int cmpfunc(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
 }
@@ -97,6 +114,7 @@ int main() {
         printf("1 - Criar imagem RGB\n");
         printf("2 - CLAHE RGB\n");
         printf("3 - RGB no blur\n");
+        printf("4 - TranposeRGB\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -129,6 +147,19 @@ int main() {
                     ImageRGB *new_image = median_blur_rgb(image, kernel_size);
                     exibir_image(new_image);
                     free_image_rgb(new_image);
+                }
+                break;
+            case 4:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    ImageRGB *transposed = transpose_rgb(image);
+                    system("PAUSE");
+                    exibir_image(transposed);
+                    transposed = transpose_rgb(transposed);
+                    system("PAUSE");
+                    exibir_image(transposed);
                 }
                 break;
             default:
