@@ -37,6 +37,81 @@ void free_image_rgb(ImageRGB *image) {
     free(image);
 }
 
+ImageRGB *transpose_rgb(const ImageRGB *image){
+    ImageRGB *transposed = (ImageRGB*)malloc(sizeof(ImageRGB));
+    transposed->dim.altura = image->dim.largura;
+    transposed->dim.largura = image->dim.altura;
+    transposed->pixels = (PixelRGB*)malloc((transposed->dim.altura * transposed->dim.largura) * sizeof(PixelRGB));
+    int i, j;
+    for (i = 0; i < image->dim.altura; i++) {
+        for (j = 0; j < image->dim.largura; j++) {
+            transposed->pixels[j * transposed->dim.largura + i].blue = image->pixels[i * image->dim.largura + j].blue;
+            transposed->pixels[j * transposed->dim.largura + i].red = image->pixels[i * image->dim.largura + j].red;
+            transposed->pixels[j * transposed->dim.largura + i].green = image->pixels[i * image->dim.largura + j].green;
+        }
+    }
+    return transposed;
+}
+
+ImageRGB *flip_vertical_rgb(const ImageRGB *image){
+    ImageRGB *flipVert = (ImageRGB*)malloc(sizeof(ImageRGB));
+    flipVert->dim.altura = image->dim.altura;
+    flipVert->dim.largura = image->dim.largura;
+    flipVert->pixels = (PixelRGB*)malloc((flipVert->dim.altura * flipVert->dim.largura) * sizeof(PixelRGB));
+    int i, j, x, y;
+    for (i = image->dim.altura - 1, x = 0; i >= 0; i--, x++) {
+        for (j = image->dim.largura - 1, y = 0; j >= 0; j--, y++) {
+            flipVert->pixels[x * flipVert->dim.largura + y].red = image->pixels[i * image->dim.largura + j].red;
+            flipVert->pixels[x * flipVert->dim.largura + y].green = image->pixels[i * image->dim.largura + j].green;
+            flipVert->pixels[x * flipVert->dim.largura + y].blue = image->pixels[i * image->dim.largura + j].blue;
+        }
+    }
+    return flipVert;
+}
+
+
+int cmpfunc(const void *a, const void *b) {
+    return (*(int *)a - *(int *)b);
+}
+
+ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size) {
+    ImageRGB *imageblur = (ImageRGB *)malloc(sizeof(ImageRGB));
+    imageblur->dim.altura = image->dim.altura;
+    imageblur->dim.largura = image->dim.largura;
+    imageblur->pixels = (PixelRGB *)malloc(sizeof(PixelRGB) * image->dim.altura * image->dim.largura);
+
+    int offset = kernel_size / 2, i, j, k, l, contador, idx, linha, coluna;
+    for(i = 0; i < image->dim.altura; i++){
+        for(j = 0; j < image->dim.largura; j++){
+            contador = 0;
+            int reds[kernel_size * kernel_size], greens[kernel_size * kernel_size], blues[kernel_size * kernel_size];
+            for(k = -offset; k <= offset; k++){
+                for(l = -offset; l <= offset; l++){
+                    linha = i + k;
+                    coluna = j + l;
+                    if(linha >= 0 && linha < image->dim.altura && coluna >= 0 && coluna < image->dim.largura){
+                        idx = linha * image->dim.largura + coluna;
+                        reds[contador] = image->pixels[idx].red;
+                        greens[contador] = image->pixels[idx].green;
+                        blues[contador] = image->pixels[idx].blue;
+                        contador++;
+                    }
+                }
+            }
+
+            qsort(reds, contador, sizeof(int), cmpfunc);
+            qsort(greens, contador, sizeof(int), cmpfunc);
+            qsort(blues, contador, sizeof(int), cmpfunc);
+
+            imageblur->pixels[i * image->dim.largura + j].red = reds[contador / 2];
+            imageblur->pixels[i * image->dim.largura + j].green = greens[contador / 2];
+            imageblur->pixels[i * image->dim.largura + j].blue = blues[contador / 2];
+        }
+    }
+
+    return imageblur;
+}
+
 void histogramatile(const ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height, int *histogramared, int *histogramagreen, int *histogramblue){
     int i, j, idx;
     
@@ -122,14 +197,14 @@ ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height){
     return imageclahe;
 }
 
-int main(){
+int main() {
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
-    if(arq == NULL){
+    if (arq == NULL) {
         perror("Erro ao abrir o arquivo");
         return 1;
     }
 
-    int altura, largura;
+    int altura, largura, tile_width, tile_height;
 
     ImageRGB *image = NULL;
 
@@ -140,11 +215,15 @@ int main(){
         printf("1 - Criar imagem RGB\n");
         printf("2 - CLAHE RGB\n");
         printf("3 - RGB no blur\n");
+        printf("4 - TranposeRGB\n");
+        printf("5 - FlipVerticalRGB\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
             case 0:
                 printf("Saindo...\n");
+                system("PAUSE");
+                system("cls");
                 break;
             case 1:
                 if (image != NULL) {
@@ -154,23 +233,26 @@ int main(){
                 fscanf(arq, "%d", &largura);
                 image = create_image_rgb(largura, altura, arq);
                 printf("Imagem criada com sucesso!\n");
+                system("PAUSE");
+                system("cls");
                 break;
             case 2:
                 if(!image){
                     printf("Crie uma imagem RGB primeiro!\n");
                 } 
                 else{
-                    int tile_width, tile_height;
                     do{
-                        printf("Digite o tamanho da tile (largura): ");
+                        printf("Digite o tamanho do tile (largura): ");
                         scanf("%d", &tile_width);
-                        printf("Digite o tamanho da tile (altura): ");
+                        printf("Digite o tamanho do tile (altura): ");
                         scanf("%d", &tile_height);
                     }while(tile_width <= 0 || tile_height <= 0);
-                    ImageRGB *novo = clahe_rgb(image, tile_width, tile_height);
-                    exibir_image(novo);
-                    free_image_rgb(novo);
+                    ImageRGB *new_image = clahe_rgb(image, tile_width, tile_height);
+                    exibir_image(new_image);
+                    free_image_rgb(new_image);
                 }
+                system("PAUSE");
+                system("cls");
                 break;
             case 3:
                 if(!image){
@@ -188,13 +270,47 @@ int main(){
                     exibir_image(new_image);
                     free_image_rgb(new_image);
                 }
+                system("PAUSE");
+                system("cls");
+                break;
+            case 4:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    ImageRGB *transposed = transpose_rgb(image);
+                    system("PAUSE");
+                    exibir_image(transposed);
+                    transposed = transpose_rgb(transposed);
+                    system("PAUSE");
+                    exibir_image(transposed);
+                }
+                system("PAUSE");
+                system("cls");
+                break;
+            case 5:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    ImageRGB *flipVert = flip_vertical_rgb(image);
+                    system("PAUSE");
+                    exibir_image(flipVert);
+                    flipVert = flip_vertical_rgb(flipVert);
+                    system("PAUSE");
+                    exibir_image(flipVert);
+                }
+                system("PAUSE");
+                system("cls");
                 break;
             default:
                 printf("Opcao invalida!\n");
+                system("PAUSE");
+                system("cls");
         }
-    }while(opc != 0);
+    } while (opc != 0);
 
-    if(image != NULL){
+    if (image != NULL) {
         free_image_rgb(image);
     }
     fclose(arq);
