@@ -53,6 +53,22 @@ ImageRGB *transpose_rgb(const ImageRGB *image){
     return transposed;
 }
 
+ImageRGB *flip_vertical_rgb(const ImageRGB *image){
+    ImageRGB *flipVert = (ImageRGB*)malloc(sizeof(ImageRGB));
+    flipVert->dim.altura = image->dim.altura;
+    flipVert->dim.largura = image->dim.largura;
+    flipVert->pixels = (PixelRGB*)malloc((flipVert->dim.altura * flipVert->dim.largura) * sizeof(PixelRGB));
+    int i, j, x, y;
+    for (i = image->dim.altura - 1, x = 0; i >= 0; i--, x++) {
+        for (j = image->dim.largura - 1, y = 0; j >= 0; j--, y++) {
+            flipVert->pixels[x * flipVert->dim.largura + y].red = image->pixels[i * image->dim.largura + j].red;
+            flipVert->pixels[x * flipVert->dim.largura + y].green = image->pixels[i * image->dim.largura + j].green;
+            flipVert->pixels[x * flipVert->dim.largura + y].blue = image->pixels[i * image->dim.largura + j].blue;
+        }
+    }
+    return flipVert;
+}
+
 
 int cmpfunc(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
@@ -115,6 +131,7 @@ int main() {
         printf("2 - CLAHE RGB\n");
         printf("3 - RGB no blur\n");
         printf("4 - TranposeRGB\n");
+        printf("5 - FlipVerticalRGB\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -160,6 +177,19 @@ int main() {
                     transposed = transpose_rgb(transposed);
                     system("PAUSE");
                     exibir_image(transposed);
+                }
+                break;
+            case 5:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    ImageRGB *flipVert = flip_vertical_rgb(image);
+                    system("PAUSE");
+                    exibir_image(flipVert);
+                    flipVert = flip_vertical_rgb(flipVert);
+                    system("PAUSE");
+                    exibir_image(flipVert);
                 }
                 break;
             default:
