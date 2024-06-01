@@ -2,6 +2,42 @@
 #include <stdlib.h>
 #include "image.h"
 
+
+ImageGray *create_image_gray(const ImageRGB *imagemrgb){
+
+    ImageGray *image = (ImageGray*)malloc(sizeof(ImageGray));
+    if(image==NULL){
+        printf("ERRO NA ALOCACAO DA MEMORIA DA IMAGE GRAY.");
+        return NULL;
+    }
+
+    image->dim.altura=imagemrgb->dim.altura;
+    image->dim.largura=imagemrgb->dim.largura;
+
+    image->pixels = (PixelGray*)malloc(image->dim.largura*image->dim.altura*sizeof(PixelGray));
+    if(image->pixels==NULL){
+        free(image);
+        return NULL;
+    }
+
+    for(int x=0; x<image->dim.altura; x++){
+        for(int y=0; y<image->dim.largura; y++){
+            int idx = x*image->dim.largura+y;
+            int resultado = (imagemrgb->pixels[idx].red+imagemrgb->pixels[idx].green+imagemrgb->pixels[idx].blue) / 3;
+            image->pixels[idx].value = resultado;
+        }
+    }
+
+    return image;
+
+}
+
+void free_image_gray(ImageGray *image){
+    if(image != NULL){
+        free(image->pixels);
+        free(image);
+    }
+
 void print_pixel_color(PixelRGB pixel) {
     printf("\033[48;2;%d;%d;%dm  \033[0m", pixel.red, pixel.green, pixel.blue);
 }
@@ -329,4 +365,5 @@ int main() {
     fclose(arq);
 
     return 0;
+
 }
