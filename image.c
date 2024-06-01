@@ -35,6 +35,30 @@ ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
 
 }
 
+ImageGray *create_image_gray(int largura, int altura, FILE *arquivogray){
+    ImageGray *image = (ImageGray*)malloc(sizeof(ImageGray));
+    if(image==NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA DA CREATE IMAGE GRAY");
+        return NULL;
+    }
+
+    image->dim.altura = altura;
+    image->dim.largura = largura;
+
+    image->pixels = (PixelGray*)malloc(sizeof(PixelGray)*altura*largura);
+    if(image->pixels == NULL){
+        free(image);
+        return NULL;
+    }
+
+    int i=0;
+    while(i<altura*largura && fscanf(arquivogray, "%d,", &image->pixels[i].value)==1){
+        i++;
+    }
+
+    return image;
+}
+
 void exibir_image_gray(ImageGray *image){
     for(int x=0; x<image->dim.altura; x++){
         for(int y=0; y<image->dim.largura; y++){
@@ -253,9 +277,16 @@ int main() {
         return 1;
     }
 
+    FILE *arquivogray = fopen("../utils/input_image_example_Gray.txt", "r");
+    if(arquivogray == NULL){
+        perror("ERRO AO ABRIR O ARQUIVO GRAY.");
+        return 1;
+    }
+
     int altura, largura, tile_width, tile_height;
 
     ImageRGB *image = NULL;
+    ImageGray *imagegray = NULL;
 
     int opc, kernel_size;
     do {
@@ -267,6 +298,7 @@ int main() {
         printf("4 - TranposeRGB\n");
         printf("5 - FlipVerticalRGB\n");
         printf("6 - Converte RGB para Gray\n");
+        printf("7 - Criar imagem Gray\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -363,6 +395,16 @@ int main() {
                 }
                 system("PAUSE");
                 system("cls");
+                break;
+            case 7:
+                if(imagegray != NULL){
+                    free_image_gray(imagegray);
+                }
+                fscanf(arquivogray, "%d", &altura);
+                fscanf(arquivogray, "%d", &largura);
+                imagegray = create_image_gray(largura, altura, arquivogray);
+                printf("IMAGEM EM ESCALA DE CINZA CRIADA COM SUCESSO!\n");
+                exibir_image_gray(imagegray);
                 break;
             default:
                 printf("Opcao invalida!\n");
