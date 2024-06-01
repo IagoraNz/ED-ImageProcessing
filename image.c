@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "image.h"
 
+void print_pixel_gray(PixelGray pixel){
+    printf("\033[48;2;%d;%d;%dm  \033[0m", pixel.value, pixel.value, pixel.value);
+}
 
 ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
 
@@ -30,6 +33,15 @@ ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
 
     return image;
 
+}
+
+void exibir_image_gray(ImageGray *image){
+    for(int x=0; x<image->dim.altura; x++){
+        for(int y=0; y<image->dim.largura; y++){
+            print_pixel_gray(image->pixels[x*image->dim.largura+y]);
+        }
+        printf("\n");
+    }
 }
 
 void free_image_gray(ImageGray *image){
@@ -254,6 +266,7 @@ int main() {
         printf("3 - RGB no blur\n");
         printf("4 - TranposeRGB\n");
         printf("5 - FlipVerticalRGB\n");
+        printf("6 - Converte RGB para Gray\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -337,6 +350,19 @@ int main() {
                     system("PAUSE");
                     exibir_image(flipVert);
                 }
+                break;
+            case 6:
+                if(!image){
+                    printf("Crie uma imagem RGB primeiro!\n");
+                } 
+                else{
+                    ImageGray *imagegray = conversion_image_gray(image);
+                    system("PAUSE");
+                    exibir_image_gray(imagegray);
+                    free_image_gray(imagegray);
+                }
+                system("PAUSE");
+                system("cls");
                 break;
             default:
                 printf("Opcao invalida!\n");
