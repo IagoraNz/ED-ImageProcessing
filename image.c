@@ -3,7 +3,7 @@
 #include "image.h"
 
 
-ImageGray *create_image_gray(const ImageRGB *imagemrgb){
+ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
 
     ImageGray *image = (ImageGray*)malloc(sizeof(ImageGray));
     if(image==NULL){
@@ -37,6 +37,7 @@ void free_image_gray(ImageGray *image){
         free(image->pixels);
         free(image);
     }
+}
 
 void print_pixel_color(PixelRGB pixel) {
     printf("\033[48;2;%d;%d;%dm  \033[0m", pixel.red, pixel.green, pixel.blue);
@@ -320,21 +321,6 @@ int main() {
                     transposed = transpose_rgb(transposed);
                     system("PAUSE");
                     exibir_image(transposed);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            case 5:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    ImageRGB *flipVert = flip_vertical_rgb(image);
-                    system("PAUSE");
-                    exibir_image(flipVert);
-                    flipVert = flip_vertical_rgb(flipVert);
-                    system("PAUSE");
-                    exibir_image(flipVert);
                 }
                 system("PAUSE");
                 system("cls");
