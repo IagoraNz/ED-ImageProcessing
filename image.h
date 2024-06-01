@@ -24,8 +24,10 @@ typedef struct imageRGB {
 } ImageRGB;
 
 // Funções de criação e liberação
+void print_pixel_gray(PixelGray pixel);
 ImageGray *conversion_image_gray(const ImageRGB *imagemrgb);
 ImageGray *create_image_gray(int largura, int altura);
+void exibir_image_gray(ImageGray *image);
 void free_image_gray(ImageGray *image);
 
 void print_pixel_color(PixelRGB pixel);
