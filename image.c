@@ -142,6 +142,31 @@ ImageRGB *flip_vertical_rgb(const ImageRGB *image){
     return flipVert;
 }
 
+ImageRGB *flip_horizontal_rgb(const ImageRGB *image){
+    ImageRGB *flipHorizontal = (ImageRGB*)malloc(sizeof(ImageRGB));
+    if(flipHorizontal == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA FLIP HORIZONTAL RGB.\n");
+        return NULL;
+    }
+
+    flipHorizontal->dim.altura = image->dim.altura;
+    flipHorizontal->dim.largura = image->dim.largura;
+
+    flipHorizontal->pixels = (PixelRGB*)malloc((flipHorizontal->dim.altura*flipHorizontal->dim.largura)*sizeof(PixelRGB));
+    if(flipHorizontal->pixels == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA OS PIXELS DE FLIP HORIZONTAL RGB.\n");
+        return NULL;
+    }
+
+    for (int i=0; i<image->dim.altura; i++){
+        for(int j=0, y=image->dim.largura - 1; j<image->dim.largura; j++, y--){
+            flipHorizontal->pixels[i*flipHorizontal->dim.largura+j] = image->pixels[i*image->dim.largura+y];
+        }
+    }
+
+    return flipHorizontal;
+}
+
 
 int cmpfunc(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
@@ -299,6 +324,7 @@ int main() {
         printf("5 - FlipVerticalRGB\n");
         printf("6 - Converte RGB para Gray\n");
         printf("7 - Criar imagem Gray\n");
+        printf("8 - FlipHorizontalRGB\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -405,6 +431,15 @@ int main() {
                 imagegray = create_image_gray(largura, altura, arquivogray);
                 printf("IMAGEM EM ESCALA DE CINZA CRIADA COM SUCESSO!\n");
                 exibir_image_gray(imagegray);
+                break;
+            case 8:
+                if(!image){
+                    printf("CRIE UMA IMAGEM RGB PRIMEIRO!\n");
+                }else{
+                    ImageRGB *flipHorizontal = flip_horizontal_rgb(image);
+                    exibir_image(flipHorizontal);
+                    free_image_rgb(flipHorizontal);
+                }
                 break;
             default:
                 printf("Opcao invalida!\n");
