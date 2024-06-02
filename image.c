@@ -167,6 +167,31 @@ ImageRGB *flip_horizontal_rgb(const ImageRGB *image){
     return flipHorizontal;
 }
 
+ImageGray *flip_horizontal_gray(const ImageGray *image){
+    ImageGray *flipHorizontalGray = (ImageGray*)malloc(sizeof(ImageGray));
+    if(flipHorizontalGray == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA FLIP HORIZONTAL GRAY.\n");
+        return NULL;
+    }
+
+    flipHorizontalGray->dim.altura = image->dim.altura;
+    flipHorizontalGray->dim.largura = image->dim.largura;
+
+    flipHorizontalGray->pixels = (PixelGray*)malloc((flipHorizontalGray->dim.altura*flipHorizontalGray->dim.largura)*sizeof(PixelGray));
+    if(flipHorizontalGray == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA OS PIXELS DE FLIP HORIZONTAL GRAY.\n");
+        free(flipHorizontalGray);
+        return NULL;
+    }
+
+    for (int i=0; i<image->dim.altura; i++){
+        for(int j=0, y=image->dim.largura - 1; j<image->dim.largura; j++, y--){
+            flipHorizontalGray->pixels[i*flipHorizontalGray->dim.largura+j] = image->pixels[i*image->dim.largura+y];
+        }
+    }
+
+    return flipHorizontalGray;
+}
 
 int cmpfunc(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
@@ -325,6 +350,7 @@ int main() {
         printf("6 - Converte RGB para Gray\n");
         printf("7 - Criar imagem Gray\n");
         printf("8 - FlipHorizontalRGB\n");
+        printf("9 - FlipHorizontalGRAY\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -430,7 +456,6 @@ int main() {
                 fscanf(arquivogray, "%d", &largura);
                 imagegray = create_image_gray(largura, altura, arquivogray);
                 printf("IMAGEM EM ESCALA DE CINZA CRIADA COM SUCESSO!\n");
-                exibir_image_gray(imagegray);
                 break;
             case 8:
                 if(!image){
@@ -439,6 +464,15 @@ int main() {
                     ImageRGB *flipHorizontal = flip_horizontal_rgb(image);
                     exibir_image(flipHorizontal);
                     free_image_rgb(flipHorizontal);
+                }
+                break;
+            case 9:
+                if(!imagegray){
+                    printf("CRIE UMA IMAGEM GRAY PRIMEIRO!\n");
+                }else{
+                    ImageGray *flipGray = flip_horizontal_gray(imagegray);
+                    exibir_image_gray(flipGray);
+                    free_image_gray(flipGray);
                 }
                 break;
             default:
