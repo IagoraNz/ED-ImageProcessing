@@ -235,6 +235,40 @@ ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size) {
     return imageblur;
 }
 
+ImageGray *median_blur_gray(const ImageGray *image, int kernel_size){
+    ImageGray *image_blur = (ImageGray*)malloc(sizeof(ImageGray));
+    image_blur->dim.altura = image->dim.altura;
+    image_blur->dim.largura = image->dim.largura;
+    image_blur->pixels = (PixelGray*)malloc((image_blur->dim.altura * image_blur->dim.largura) * sizeof(PixelGray));
+
+    int offset = kernel_size / 2, i, j, k, l, contador, idx, linha, coluna;
+
+
+    for(i = 0; i < image->dim.altura; i++){
+        for(j = 0; j < image->dim.largura; j++){
+            contador = 0;
+            int grays[kernel_size * kernel_size];
+            for(k = -offset; k <= offset; k++){
+                for(l = -offset; l <= offset; l++){
+                    linha = i + k;
+                    coluna = j + l;
+                    if(linha >= 0 && linha < image->dim.altura && coluna >= 0 && coluna < image->dim.largura){
+                        idx = linha * image->dim.largura + coluna;
+                        grays[contador] = image->pixels[idx].value;
+                        contador++;
+                    }
+                }
+            }
+
+            qsort(grays, contador, sizeof(int), cmpfunc);
+
+            image_blur->pixels[i * image->dim.largura + j].value = grays[contador / 2];
+        }
+    }
+
+    return image_blur;
+}
+
 void histogramatile(const ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height, int *histogramared, int *histogramagreen, int *histogramblue){
     int i, j, idx;
     
@@ -351,6 +385,7 @@ int main() {
         printf("7 - Criar imagem Gray\n");
         printf("8 - FlipHorizontalRGB\n");
         printf("9 - FlipHorizontalGRAY\n");
+        printf("8 - Gray no blur\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -474,6 +509,26 @@ int main() {
                     exibir_image_gray(flipGray);
                     free_image_gray(flipGray);
                 }
+                // exibir_image_gray(imagegray);
+                break;
+            case 8:
+                if(!imagegray){
+                    printf("Crie uma imagem Gray primeiro!\n");
+                } 
+                else{
+                    do{
+                        printf("Digite o tamanho do kernel: ");
+                        scanf("%d", &kernel_size);
+                        if(kernel_size % 2 == 0){
+                            printf("O tamanho precisa ser impar\n");
+                        }
+                    }while(kernel_size % 2 == 0);
+                    ImageGray *new_image = median_blur_gray(imagegray, kernel_size);
+                    exibir_image_gray(new_image);
+                    free_image_gray(new_image);
+                }
+                system("PAUSE");
+                system("cls");
                 break;
             default:
                 printf("Opcao invalida!\n");
