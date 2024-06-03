@@ -354,9 +354,23 @@ ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height){
     return imageclahe;
 }
 
-int main() {
+ImageGray *flip_vertical_gray(ImageGray *image){
+    ImageGray *flipVert = (ImageGray*)malloc(sizeof(ImageGray));
+    flipVert->dim.altura = image->dim.altura;
+    flipVert->dim.largura = image->dim.largura;
+    flipVert->pixels = (PixelGray*)malloc((flipVert->dim.altura * flipVert->dim.largura) * sizeof(PixelGray));
+    int i, j, x, y;
+    for(i = image->dim.altura - 1, x = 0; i >= 0; i--, x++){
+        for(j = image->dim.largura - 1, y = 0; j >= 0; j--, y++){
+            flipVert->pixels[x * flipVert->dim.largura + y].value = image->pixels[i * image->dim.largura + j].value;
+        }
+    }
+    return flipVert;
+}
+
+int main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
-    if (arq == NULL) {
+    if(arq == NULL){
         perror("Erro ao abrir o arquivo");
         return 1;
     }
@@ -385,7 +399,8 @@ int main() {
         printf("7 - Criar imagem Gray\n");
         printf("8 - FlipHorizontalRGB\n");
         printf("9 - FlipHorizontalGRAY\n");
-        printf("8 - Gray no blur\n");
+        printf("10 - Gray no blur\n");
+        printf("11 - FlipVerticalGRAY\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -511,9 +526,9 @@ int main() {
                 }
                 // exibir_image_gray(imagegray);
                 break;
-            case 8:
+            case 10:
                 if(!imagegray){
-                    printf("Crie uma imagem Gray primeiro!\n");
+                    printf("Crie uma imagem gray primeiro!\n");
                 } 
                 else{
                     do{
@@ -530,14 +545,25 @@ int main() {
                 system("PAUSE");
                 system("cls");
                 break;
+            
+            case 11:
+                if(!imagegray){
+                    printf("Crie uma imagem gray primeiro!\n");
+                } 
+                else{
+                    ImageGray *flipGray = flip_vertical_gray(imagegray);
+                    exibir_image_gray(flipGray);
+                    free_image_gray(flipGray);
+                }
+                break;
             default:
                 printf("Opcao invalida!\n");
                 system("PAUSE");
                 system("cls");
         }
-    } while (opc != 0);
+    }while(opc != 0);
 
-    if (image != NULL) {
+    if(image != NULL){
         free_image_rgb(image);
     }
     fclose(arq);
