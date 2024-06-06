@@ -126,6 +126,31 @@ ImageRGB *transpose_rgb(const ImageRGB *image){
     return transposed;
 }
 
+ImageGray *transpose_gray(const ImageGray *image){
+    ImageGray *transposed = (ImageGray*)malloc(sizeof(ImageGray));
+    if(transposed == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA A TRANSPOSE GRAY.\n");
+        return NULL;
+    }
+
+    transposed->dim.altura = image->dim.largura;
+    transposed->dim.largura = image->dim.altura;
+    transposed->pixels = (PixelGray*)malloc((transposed->dim.altura*transposed->dim.largura)*sizeof(PixelGray));
+    if(transposed->pixels == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA OS PIXELS DE TRANSPOSE GRAY.\n");
+        free(transposed);
+        return NULL;
+    }
+
+    for(int i = 0; i < image->dim.altura; i++){
+        for(int j = 0; j < image->dim.largura; j++){
+            transposed->pixels[j*transposed->dim.largura+i].value = image->pixels[i*image->dim.largura+j].value;
+        }
+    }
+
+    return transposed;
+}
+
 ImageRGB *flip_vertical_rgb(const ImageRGB *image){
     ImageRGB *flipVert = (ImageRGB*)malloc(sizeof(ImageRGB));
     flipVert->dim.altura = image->dim.altura;
@@ -385,7 +410,8 @@ int main() {
         printf("7 - Criar imagem Gray\n");
         printf("8 - FlipHorizontalRGB\n");
         printf("9 - FlipHorizontalGRAY\n");
-        printf("8 - Gray no blur\n");
+        printf("10 - Gray no blur\n");
+        printf("11 - TranposeGRAY\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -511,7 +537,7 @@ int main() {
                 }
                 // exibir_image_gray(imagegray);
                 break;
-            case 8:
+            case 10:
                 if(!imagegray){
                     printf("Crie uma imagem Gray primeiro!\n");
                 } 
@@ -529,6 +555,15 @@ int main() {
                 }
                 system("PAUSE");
                 system("cls");
+                break;
+            case 11:
+                if(!imagegray){
+                    printf("Crie uma imagem Gray primeiro!\n");
+                }else{
+                    ImageGray *transposedGray = transpose_gray(imagegray);
+                    exibir_image_gray(transposedGray);
+                    free_image_gray(transposedGray);
+                }
                 break;
             default:
                 printf("Opcao invalida!\n");
