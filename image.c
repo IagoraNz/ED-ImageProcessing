@@ -5,7 +5,7 @@
 #define PIXELS 256
 
 void print_pixel_gray(PixelGray pixel){
-    printf("\033[48;2;%d;%d;%dm  \033[0m", pixel.value, pixel.value, pixel.value);
+    printf("\033[48;2;%d;%d;%dm \033[0m", pixel.value, pixel.value, pixel.value);
 }
 
 ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
@@ -653,5 +653,4 @@ int main(){
     fclose(arq);
 
     return 0;
-
 }
