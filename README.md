@@ -1,5 +1,5 @@
 # 📄 Implementation of Image Manipulation Operations with Rollback History
-Software development project for the second grade of the Data Structure I discipline. The general objective is to apply knowledge in linked lists in image processing through the C programming language
+Software development project for the second grade of the Data Structure I discipline. The general objective is to apply knowledge in linked lists in image processing through the C programming language.
 
 ## 🔗 Development environment
 🔧 GCC

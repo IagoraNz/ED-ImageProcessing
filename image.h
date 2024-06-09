@@ -23,6 +23,18 @@ typedef struct imageRGB {
     PixelRGB *pixels;
 } ImageRGB;
 
+typedef struct elementoduploRGB{
+    struct elementoduploRGB *ant;
+    struct elementoduploRGB *prox;
+    ImageRGB *image;
+} ElementoDuploRGB;
+
+typedef struct elementoduploGray{
+    struct elementoduploGray *ant;
+    struct elementoduploGray *prox;
+    ImageGray *image;
+} ElementoDuploGray;
+
 // Funções de criação e liberação
 void print_pixel_gray(PixelGray pixel);
 ImageGray *conversion_image_gray(const ImageRGB *imagemrgb);
