@@ -584,6 +584,44 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
+ElementoDuploGray *addFinalDuplamenteGray(ElementoDuploGray *l, ImageGray *image){
+    ElementoDuploGray *novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
+    ElementoDuploGray *aux = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
+    if(novo){
+        novo->image = image;
+        novo->prox = NULL;
+        if(l == NULL){
+            novo->ant = NULL;
+            l = novo;
+        }
+        else{
+            aux = l;
+            while(aux->prox != NULL){
+                aux = aux->prox;
+            }
+            aux->prox = novo;
+            novo->ant = aux;
+        }
+    }
+    else{
+        printf("Erro de alocação de memória\n");
+    }
+    return l;
+}
+
+void mostrarListaDuplamente(ElementoDuploGray *l){
+    ElementoDuploGray *atual = l;
+    
+    if(atual == NULL){
+        printf("lista vazia\n");
+    }
+
+    while (atual != NULL){
+        exibir_image_gray(atual->image);
+        atual = atual->prox;
+    }
+}
+
 int main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){

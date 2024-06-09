@@ -65,4 +65,9 @@ ImageGray *median_blur_gray(const ImageGray *image, int kernel_size);
 ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
 ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
 
+// Manipulação de Listas
+ElementoDuploGray *addFinalDuplamenteGray(ElementoDuploGray *l, ImageGray *image);
+ElementoDuploRGB *addFinalDuplamenteRGB(ElementoDuploRGB *l, ImageRGB *image);
+void mostrarListaDuplamente(ElementoDuploGray *l);
+
 #endif // IMAGE_H
