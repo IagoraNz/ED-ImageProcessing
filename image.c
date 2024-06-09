@@ -411,7 +411,7 @@ int main() {
         printf("8 - FlipHorizontalRGB\n");
         printf("9 - FlipHorizontalGRAY\n");
         printf("10 - Gray no blur\n");
-        printf("13 - TranposeGRAY\n");
+        printf("13 - Tranposegray\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
