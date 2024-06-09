@@ -559,14 +559,14 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
-int main(){
-    FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
+int _main(){
+    FILE *arq = fopen("utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){
         perror("Erro ao abrir o arquivo");
         return 1;
     }
 
-    FILE *arquivogray = fopen("../utils/input_image_example_Gray.txt", "r");
+    FILE *arquivogray = fopen("utils/input_image_example_Gray.txt", "r");
     if(arquivogray == NULL){
         perror("ERRO AO ABRIR O ARQUIVO GRAY.");
         return 1;
