@@ -1,8 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "image.c"
 
 
-int main() {
+int main(){
     int opc, altura = 0, largura = 0;
     FILE *arq = fopen("../utils/input_image_example_Gray.txt", "r");
     if(arq == NULL){
@@ -14,10 +15,10 @@ int main() {
     ImageGray *image = create_image_gray(altura, largura, arq);
     fclose(arq);
     ElementoDuploGray *elemento = NULL;
-    addFinalDuplamenteGray(elemento, image);
+    elemento = addInicioDuplamenteCircularGray(elemento, image);
     do
     {
-        printf("-------------------");
+        printf("-------------------\n");
         printf("1 - FlipHorizontalGRAY\n");
         printf("2 - Gray no blur\n");
         printf("3 - FlipVerticalGRAY\n");
@@ -30,23 +31,30 @@ int main() {
         switch (opc)
         {
         case 1:
+            elemento = addInicioDuplamenteCircularGray(elemento, flip_horizontal_gray(elemento->image));
             printf("FlipHorizontalGRAY\n");
             break;
         case 2:
+            elemento = addInicioDuplamenteCircularGray(elemento, median_blur_gray(elemento->image, 11));
             printf("Gray no blur\n");
             break;
         case 3:
+            elemento = addInicioDuplamenteCircularGray(elemento, flip_vertical_gray(elemento->image));
             printf("FlipVerticalGRAY\n");
             break;
         case 4:
+            elemento = addInicioDuplamenteCircularGray(elemento, clahe_gray(elemento->image, 512, 512));
             printf("CLAHE GRAY\n");
             break;
         case 5:
-            addFinalDuplamenteGray(elemento, transpose_gray(elemento->image));
+            elemento = addInicioDuplamenteCircularGray(elemento, transpose_gray(elemento->image));
             printf("Tranposegray\n");
             break;
         case 6:
-            mostrarListaDuplamente(elemento);
+            mostrarListaDuplamenteCircular(elemento);
+            break;
+        case 7:
+            _main();
             break;
         default:    
             break;
