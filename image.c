@@ -411,7 +411,7 @@ int main() {
         printf("8 - FlipHorizontalRGB\n");
         printf("9 - FlipHorizontalGRAY\n");
         printf("10 - Gray no blur\n");
-        printf("11 - TranposeGRAY\n");
+        printf("13 - TranposeGRAY\n");
         printf("Digite a opcao desejada: ");
         scanf("%d", &opc);
         switch (opc) {
@@ -556,7 +556,7 @@ int main() {
                 system("PAUSE");
                 system("cls");
                 break;
-            case 11:
+            case 13:
                 if(!imagegray){
                     printf("Crie uma imagem Gray primeiro!\n");
                 }else{
