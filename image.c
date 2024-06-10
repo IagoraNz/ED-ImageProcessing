@@ -4,8 +4,8 @@
 
 #define PIXELS 256
 
-void print_pixel_gray(PixelGray pixel){
-    printf("\033[48;2;%d;%d;%dm \033[0m", pixel.value, pixel.value, pixel.value);
+void print_pixel_gray(PixelGray pixel) {
+    printf("\033[48;2;%d;%d;%dm  \033[0m", pixel.value, pixel.value, pixel.value);
 }
 
 ImageGray *conversion_image_gray(const ImageRGB *imagemrgb){
@@ -61,10 +61,10 @@ ImageGray *create_image_gray(int largura, int altura, FILE *arquivogray){
     return image;
 }
 
-void exibir_image_gray(ImageGray *image){
-    for(int x=0; x<image->dim.altura; x++){
-        for(int y=0; y<image->dim.largura; y++){
-            print_pixel_gray(image->pixels[x*image->dim.largura+y]);
+void exibir_image_gray(ImageGray *image) {
+    for (int x = 0; x < image->dim.altura; x++) {
+        for (int y = 0; y < image->dim.largura; y++) {
+            print_pixel_gray(image->pixels[x * image->dim.largura + y]);
         }
         printf("\n");
     }
@@ -584,7 +584,47 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
-int main(){
+ElementoDuploGray* addInicioDuplamenteCircularGray(ElementoDuploGray* l, ImageGray* image) {
+    ElementoDuploGray* novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
+    if (novo) {
+        novo->image = image;
+
+        if (l == NULL) {
+            // Se a lista está vazia, o novo nó aponta para si mesmo em ambas as direções
+            novo->prox = novo;
+            novo->ant = novo;
+            l = novo;
+        } else {
+            ElementoDuploGray* ultimo = l->ant;
+
+            novo->prox = l;
+            novo->ant = ultimo;
+            l->ant = novo;
+            ultimo->prox = novo;
+            l = novo; // Novo elemento se torna a nova cabeça da lista
+        }
+    } else {
+        printf("Erro de alocação de memória\n");
+    }
+    return l; // Retorna a nova cabeça da lista
+}
+
+
+
+void mostrarListaDuplamenteCircular(ElementoDuploGray *l){
+    ElementoDuploGray *atual = l;
+    
+    if(atual == NULL){
+        printf("lista vazia\n");
+    }
+
+    do{
+        exibir_image_gray(atual->image);
+        atual = atual->prox;
+    }while (atual != l);
+}
+
+int _main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){
         perror("Erro ao abrir o arquivo");
@@ -636,7 +676,7 @@ int main(){
                 image = create_image_rgb(largura, altura, arq);
                 printf("Imagem criada com sucesso!\n");
                 system("PAUSE");
-                system("cls");
+                exibir_image(image);
                 break;
             case 2:
                 if(!image){
@@ -683,9 +723,6 @@ int main(){
                     ImageRGB *transposed = transpose_rgb(image);
                     system("PAUSE");
                     exibir_image(transposed);
-                    transposed = transpose_rgb(transposed);
-                    system("PAUSE");
-                    exibir_image(transposed);
                 }
                 system("PAUSE");
                 system("cls");
@@ -724,6 +761,7 @@ int main(){
                 fscanf(arquivogray, "%d", &largura);
                 imagegray = create_image_gray(largura, altura, arquivogray);
                 printf("IMAGEM EM ESCALA DE CINZA CRIADA COM SUCESSO!\n");
+                exibir_image_gray(imagegray);
                 break;
             case 8:
                 if(!image){
@@ -798,13 +836,20 @@ int main(){
                 }else{
                     ImageGray *transposedGray = transpose_gray(imagegray);
                     exibir_image_gray(transposedGray);
-                    free_image_gray(transposedGray);
                 }
                 break;
             default:
                 printf("Opcao invalida!\n");
                 system("PAUSE");
                 system("cls");
+            case 14:
+                if(image != NULL){
+                    exibir_image(image);
+                    printf("\n");
+                    exibir_image_gray(imagegray);
+                }
+                fclose(arq);
+                break;
         }
     }while(opc != 0);
 
