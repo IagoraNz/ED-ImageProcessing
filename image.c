@@ -584,45 +584,68 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
-ElementoDuploGray* addInicioDuplamenteCircularGray(ElementoDuploGray* l, ImageGray* image) {
-    ElementoDuploGray* novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
-    if (novo) {
-        novo->image = image;
-
-        if (l == NULL) {
-            // Se a lista está vazia, o novo nó aponta para si mesmo em ambas as direções
-            novo->prox = novo;
-            novo->ant = novo;
-            l = novo;
-        } else {
-            ElementoDuploGray* ultimo = l->ant;
-
-            novo->prox = l;
-            novo->ant = ultimo;
-            l->ant = novo;
-            ultimo->prox = novo;
-            l = novo; // Novo elemento se torna a nova cabeça da lista
-        }
-    } else {
-        printf("Erro de alocação de memória\n");
+ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    while (l->ant != NULL) {
+        l = l->ant;
     }
-    return l; // Retorna a nova cabeça da lista
+    return l;
 }
 
+ElementoDuploGray *retornaFimGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    while (l->prox != NULL) {
+        l = l->prox;
+    }
+    return l;
+}
 
+ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    return l->ant;
+}
 
-void mostrarListaDuplamenteCircular(ElementoDuploGray *l){
-    ElementoDuploGray *atual = l;
+ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    return l->prox;
+}
+
+ElementoDuploGray* addInicioDuplamenteGray(ElementoDuploGray* l, ImageGray* image) {
+    ElementoDuploGray *novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
+    if (novo == NULL) {
+        fprintf(stderr, "Erro ao alocar memoria\n");
+        exit(1);
+    }
+    novo->image = image;
+
+    if (l == NULL) {
+        novo->prox = NULL;
+        novo->ant = NULL;
+        return novo;
+    }
     
-    if(atual == NULL){
-        printf("lista vazia\n");
-    }
-
-    do{
-        exibir_image_gray(atual->image);
-        atual = atual->prox;
-    }while (atual != l);
+    ElementoDuploGray *inicio = retornaInicioGray(l);
+    
+    novo->prox = inicio;
+    novo->ant = NULL;
+    inicio->ant = novo;
+    
+    return novo;
 }
+
+void mostrarHistoricoGray(ElementoDuploGray *l) {
+    if (l == NULL) {
+        printf("Nao ha imagens no historico.\n");
+        return;
+    }
+    
+    ElementoDuploGray *aux = retornaFimGray(l);
+    while (aux != NULL) {
+        exibir_image_gray(aux->image);
+        aux = aux->prox;
+    }
+}
+
 
 int _main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
