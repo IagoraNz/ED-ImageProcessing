@@ -397,20 +397,15 @@ ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height) {
         }
     }
 
-    int proxTileW, proxTileH;
-
     for(tileY = 0; tileY < image->dim.altura; tileY += tile_height){
         for(tileX = 0; tileX < image->dim.largura; tileX += tile_width){
             histogramatile(image, tileX, tileY, tile_width, tile_height, histoRed, histoGreen, histoBlue);
             histocumulativo(histoRed, cumulativoRed, totalPixels, clipLimite);
             histocumulativo(histoGreen, cumulativoGreen, totalPixels, clipLimite);
             histocumulativo(histoBlue, cumulativoBlue, totalPixels, clipLimite);
-            
-            proxTileW = tile_width;
-            proxTileH = tile_height;
 
             if(tileX + tile_width < image->dim.largura){
-                histogramatile(image, tileX + tile_width, tileY, proxTileW, proxTileH, proxRed, proxGreen, proxBlue);
+                histogramatile(image, tileX + tile_width, tileY, tile_width, tile_height, proxRed, proxGreen, proxBlue);
                 histocumulativo(proxRed, proxCumuRed, totalPixels, clipLimite);
                 histocumulativo(proxGreen, proxCumuGreen, totalPixels, clipLimite);
                 histocumulativo(proxBlue, proxCumuBlue, totalPixels, clipLimite);
@@ -424,13 +419,13 @@ ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height) {
             }
 
             if(tileY + tile_height < image->dim.altura){
-                histogramatile(image, tileX, tileY + tile_height, tile_width, proxTileH, abaixoRed, abaixoGreen, abaixoBlue);
+                histogramatile(image, tileX, tileY + tile_height, tile_width, tile_height, abaixoRed, abaixoGreen, abaixoBlue);
                 histocumulativo(abaixoRed, abaixoCumuRed, totalPixels, clipLimite);
                 histocumulativo(abaixoGreen, abaixoCumuGreen, totalPixels, clipLimite);
                 histocumulativo(abaixoBlue, abaixoCumuBlue, totalPixels, clipLimite);
 
                 if(tileX + tile_width < image->dim.largura){
-                    histogramatile(image, tileX + tile_width, tileY + tile_height, proxTileW, proxTileH, diagRed, diagGreen, diagBlue);
+                    histogramatile(image, tileX + tile_width, tileY + tile_height, tile_width, tile_height, diagRed, diagGreen, diagBlue);
                     histocumulativo(diagRed, diagCumuRed, totalPixels, clipLimite);
                     histocumulativo(diagGreen, diagCumuGreen, totalPixels, clipLimite);
                     histocumulativo(diagBlue, diagCumuBlue, totalPixels, clipLimite);
@@ -524,18 +519,13 @@ ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height){
         }
     }
 
-    int proxTileW, proxTileH;
-
     for(tileY = 0; tileY < image->dim.altura; tileY += tile_height){
         for(tileX = 0; tileX < image->dim.largura; tileX += tile_width){
             histogramatile_gray(image, tileX, tileY, tile_width, tile_height, histoGray);
             histocumulativo(histoGray, cumulativoGray, totalPixels, clipLimite);
-            
-            proxTileW = tile_width;
-            proxTileH = tile_height;
 
             if(tileX + tile_width < image->dim.largura){
-                histogramatile_gray(image, tileX + tile_width, tileY, proxTileW, proxTileH, proxGray);
+                histogramatile_gray(image, tileX + tile_width, tileY, tile_width, tile_height, proxGray);
                 histocumulativo(proxGray, proxCumuGray, totalPixels, clipLimite);
             } 
             else{
@@ -544,11 +534,11 @@ ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height){
             }
 
             if(tileY + tile_height < image->dim.altura){
-                histogramatile_gray(image, tileX, tileY + tile_height, tile_width, proxTileH, abaixoGray);
+                histogramatile_gray(image, tileX, tileY + tile_height, tile_width, tile_height, abaixoGray);
                 histocumulativo(abaixoGray, abaixoCumuGray, totalPixels, clipLimite);
 
                 if(tileX + tile_width < image->dim.largura){
-                    histogramatile_gray(image, tileX + tile_width, tileY + tile_height, proxTileW, proxTileH, diagGray);
+                    histogramatile_gray(image, tileX + tile_width, tileY + tile_height, tile_width, tile_height, diagGray);
                     histocumulativo(diagGray, diagCumuGray, totalPixels, clipLimite);
                 } 
                 else{
@@ -861,10 +851,6 @@ int _main(){
                     exibir_image_gray(transposedGray);
                 }
                 break;
-            default:
-                printf("Opcao invalida!\n");
-                system("PAUSE");
-                system("cls");
             case 14:
                 if(image != NULL){
                     exibir_image(image);
@@ -872,6 +858,11 @@ int _main(){
                     exibir_image_gray(imagegray);
                 }
                 fclose(arq);
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                system("PAUSE");
+                system("cls");
                 break;
         }
     }while(opc != 0);
