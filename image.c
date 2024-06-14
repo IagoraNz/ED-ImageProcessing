@@ -644,6 +644,24 @@ ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l){
     return l;
 }
 
+ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    while(l->prox != NULL)
+        l = l->prox;
+
+    return l;
+}
+
+ElementoDuploRGB *ProximaImagemRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    return l->ant;
+}
+
+ElementoDuploRGB *ImagemAnteriorRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    return l->prox;
+}
+
 int _main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){
