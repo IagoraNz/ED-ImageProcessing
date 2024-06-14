@@ -681,6 +681,22 @@ ElementoDuploRGB *addInicioDuplamenteRGB(ElementoDuploRGB *l, ImageRGB *image){
     novo->prox = inicio;
     novo->ant = NULL;
     inicio->ant = novo;
+
+    return novo;
+}
+
+void mostrarHistoricoRGB(ElementoDuploRGB *l){
+    if(l){
+        ElementoDuploRGB *aux = retornaFimRGB(l);
+        while(aux){
+            exibir_image(aux->image);
+            aux = aux->prox;
+        }
+    }
+    else{
+        printf("Nao ha imagens no historico.\n");
+        return;
+    }
 }
 
 int _main(){
