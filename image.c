@@ -662,6 +662,27 @@ ElementoDuploRGB *ImagemAnteriorRGB(ElementoDuploRGB *l){
     return l->prox;
 }
 
+ElementoDuploRGB *addInicioDuplamenteRGB(ElementoDuploRGB *l, ImageRGB *image){
+    ElementoDuploRGB *novo = (ElementoDuploRGB*)malloc(sizeof(ElementoDuploRGB));
+    if(!novo){
+        fprintf(stderr, "Erro ao alocar memoria\n");
+        exit(1);
+    }
+    novo->image = image;
+
+    if(!l){
+        novo->prox = NULL;
+        novo->ant = NULL;
+        return novo;
+    }
+
+    ElementoDuploRGB *inicio = retornaInicioRGB(l);
+
+    novo->prox = inicio;
+    novo->ant = NULL;
+    inicio->ant = novo;
+}
+
 int _main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){
