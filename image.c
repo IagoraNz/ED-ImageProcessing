@@ -636,6 +636,13 @@ void mostrarHistoricoGray(ElementoDuploGray *l) {
     }
 }
 
+ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    while(l->ant != NULL)
+        l = l->ant;
+
+    return l;
+}
 
 int _main(){
     FILE *arq = fopen("../utils/input_image_example_RGB.txt", "r");
