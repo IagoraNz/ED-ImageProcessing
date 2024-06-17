@@ -73,7 +73,11 @@ ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l);
 void mostrarHistoricoGray(ElementoDuploGray *l);
 
 ElementoDuploRGB *addInicioDuplamenteRGB(ElementoDuploRGB *l, ImageRGB *image);
-
+ElementoDuploRGB *ProximaImagemRGB(ElementoDuploRGB *l);
+ElementoDuploRGB *ImagemAnteriorRGB(ElementoDuploRGB *l);
+ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l);
+void mostrarHistoricoRGB(ElementoDuploRGB *l);
 
 int _main();
+
 #endif // IMAGE_H
