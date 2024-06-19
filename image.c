@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "image.h"
 
 #define PIXELS 256
@@ -558,6 +559,53 @@ ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height){
     }
     
     return image_clahe_gray;
+}
+
+ImageRGB *randomicoRGB(ImageRGB *image){
+    int num, i, res, tW, tH, kernel;
+    srand(time(NULL));
+    ImageRGB *imgRand = (ImageRGB*)malloc(sizeof(ImageRGB));
+    ImageRGB *tempImage = image;
+
+    printf("\tDigite a quantidade de operacoes: ");
+    scanf("%d", &num);
+
+    printf("\tPara a operacao de CLAHE declare o tileW e o tileH: ");
+    scanf("%d %d", &tW, &tH);
+
+    printf("\tPara a operacao de blur declare o kernel size: ");
+    scanf("%d", &kernel);
+    printf("\n");
+    for(i = 0; i < num; i++){
+        res = rand() % 5 + 1;
+        if(res == 1){
+            imgRand = flip_vertical_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip vertical aplicado\n", i + 1);
+        }
+        else if(res == 2){
+            imgRand = flip_horizontal_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip horizontal aplicado\n", i + 1);
+        }
+        else if(res == 3){
+            imgRand = transpose_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Transpose aplicado\n", i + 1);
+        }
+        else if(res == 4){
+            imgRand = median_blur_rgb(tempImage, kernel);
+            tempImage = imgRand;
+            printf("\t%d - Efeito blur aplicado\n", i + 1);
+        }
+        else if(res == 5){
+            imgRand = clahe_rgb(tempImage, tW, tH);
+            tempImage = imgRand;
+            printf("\t%d - Efeito clahe aplicado\n", i + 1);
+        }
+    }
+
+    return imgRand;
 }
 
 ImageGray *flip_vertical_gray(ImageGray *image){

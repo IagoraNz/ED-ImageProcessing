@@ -56,6 +56,7 @@ ImageGray *transpose_gray(const ImageGray *image);
 ImageRGB *flip_vertical_rgb(const ImageRGB *image);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
 ImageRGB *transpose_rgb(const ImageRGB *image);
+ImageRGB *randomicoRGB(ImageRGB *image);
 
 // Manipulação por pixel para ImageGray
 ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
