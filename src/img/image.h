@@ -1,4 +1,5 @@
 #pragma once
+#include <stdio.h>
 
 typedef struct dimensoes {
     int altura, largura;
@@ -21,6 +22,21 @@ typedef struct imageRGB {
     Dimensoes dim;
     PixelRGB *pixels;
 } ImageRGB;
+
+
+// Lista Duplamente Encadeada RGB
+typedef struct elementoduploRGB{
+    struct elementoduploRGB *ant;
+    struct elementoduploRGB *prox;
+    ImageRGB *image;
+} ElementoDuploRGB;
+
+// Lista Duplamente Encadeada Gray
+typedef struct elementoduploGray{
+    struct elementoduploGray *ant;
+    struct elementoduploGray *prox;
+    ImageGray *image;
+} ElementoDuploGray;
 
 // Funções de criação e liberação
 void print_pixel_gray(PixelGray pixel);
@@ -51,5 +67,21 @@ ImageGray *median_blur_gray(const ImageGray *image, int kernel_size);
 // Manipulação por pixel para ImageRGB
 ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
 ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
+
+// Manipulação de Lista Gray
+ElementoDuploGray* addInicioDuplamenteGray(ElementoDuploGray* l, ImageGray* image);
+ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l);
+ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l);
+ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l);
+ElementoDuploGray *retornaFimGray(ElementoDuploGray *l);
+void mostrarHistoricoGray(ElementoDuploGray *l);
+
+// Manipulação de Lista RGB
+void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image);
+void ProximaImagem_RGB(ElementoDuploRGB **l);
+void ImagemAnterior_RGB(ElementoDuploRGB **l);
+ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l);
+ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l);
+void mostrarHistoricoRGB(ElementoDuploRGB *l);
 
 int _main();

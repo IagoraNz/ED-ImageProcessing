@@ -559,6 +559,131 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
+ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    while (l->ant != NULL) {
+        l = l->ant;
+    }
+    return l;
+}
+
+ElementoDuploGray *retornaFimGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    while (l->prox != NULL) {
+        l = l->prox;
+    }
+    return l;
+}
+
+ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    return l->ant;
+}
+
+ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l) {
+    if (l == NULL) return NULL;
+    return l->prox;
+}
+
+ElementoDuploGray* addInicioDuplamenteGray(ElementoDuploGray* l, ImageGray* image) {
+    ElementoDuploGray *novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
+    if (novo == NULL) {
+        fprintf(stderr, "Erro ao alocar memoria\n");
+        exit(1);
+    }
+    novo->image = image;
+
+    if (l == NULL) {
+        novo->prox = NULL;
+        novo->ant = NULL;
+        return novo;
+    }
+    
+    ElementoDuploGray *inicio = retornaInicioGray(l);
+    
+    novo->prox = inicio;
+    novo->ant = NULL;
+    inicio->ant = novo;
+    
+    return novo;
+}
+
+void mostrarHistoricoGray(ElementoDuploGray *l) {
+    if (l == NULL) {
+        printf("Nao ha imagens no historico.\n");
+        return;
+    }
+    
+    ElementoDuploGray *aux = retornaFimGray(l);
+    while (aux != NULL) {
+        exibir_image_gray(aux->image);
+        aux = aux->prox;
+    }
+}
+
+ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    while(l->ant != NULL)
+        l = l->ant;
+
+    return l;
+}
+
+ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l){
+    if (!l) return NULL;
+    while(l->prox != NULL)
+        l = l->prox;
+
+    return l;
+}
+
+void ProximaImagem_RGB(ElementoDuploRGB **l){
+    if (!*l) return;
+    *l = (*l)->ant;
+}
+
+void ImagemAnterior_RGB(ElementoDuploRGB **l){
+    if (!*l) return;
+    *l = (*l)->prox;
+}
+
+void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
+    ElementoDuploRGB *novo = (ElementoDuploRGB*)malloc(sizeof(ElementoDuploRGB));
+    if (!novo) {
+        fprintf(stderr, "Erro ao alocar memoria\n");
+        exit(1);
+    }
+    novo->image = image;
+    novo->ant = NULL;
+
+    if (!*l) {
+        // Se a lista está vazia, o novo elemento será o único na lista
+        novo->prox = NULL;
+    } else {
+        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+        novo->prox = *l;
+        (*l)->ant = novo;
+    }
+
+    // Atualiza o ponteiro para o início da lista
+    *l = novo;
+    printf("Imagem adicionada ao historico.\n");
+}
+
+void mostrarHistoricoRGB(ElementoDuploRGB *l){
+    if(l){
+        ElementoDuploRGB *aux = retornaFimRGB(l);
+        while(aux){
+            exibir_image(aux->image);
+            aux = aux->prox;
+        }
+    }
+    else{
+        printf("Nao ha imagens no historico.\n");
+        return;
+    }
+}
+
 int _main(){
     FILE *arq = fopen("utils/input_image_example_RGB.txt", "r");
     if(arq == NULL){
