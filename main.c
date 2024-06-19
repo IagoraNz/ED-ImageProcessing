@@ -53,6 +53,7 @@ int main(){
             printf("\t5 - Tranpose imagem\n");
             printf("\t6 - Exibir historico\n");
             printf("\t7 - Exibir imagem atual\n");
+            printf("\t8 - Operacoes randomicas\n");
             printf("\t0 - Sair\n");
             printf("\tInforme a opcao desejada: ");
             scanf("%d", &opc);
@@ -125,6 +126,13 @@ int main(){
                         }
                     }while(ops != 0);  
                 }
+                break;
+            case 8:
+                elemento = addInicioDuplamenteGray(elemento, randomicoGray(elemento->image));
+                printf("\tOperacoes randomicas aplicadas com sucesso\n");
+                printf("\n\t");
+                system("PAUSE");
+                system("cls");
                 break;
             default:
                 printf("\tOpcao invalida\n");  
