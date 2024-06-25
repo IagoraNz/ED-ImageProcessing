@@ -108,8 +108,10 @@ void exibir_image(ImageRGB *image) {
 }
 
 void free_image_rgb(ImageRGB *image) {
-    free(image->pixels);
-    free(image);
+    if(image != NULL){
+        free(image->pixels);
+        free(image);
+    }
 }
 
 ImageRGB *transpose_rgb(const ImageRGB *image){
@@ -194,6 +196,33 @@ ImageGray *flip_horizontal_gray(const ImageGray *image){
 
     return flipHorizontalGray;
 }
+
+ImageGray *transpose_gray(const ImageGray *image){
+    ImageGray *transposed = (ImageGray*)malloc(sizeof(ImageGray));
+    if(transposed == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA A TRANSPOSE GRAY.\n");
+        return NULL;
+    }
+
+    transposed->dim.altura = image->dim.largura;
+    transposed->dim.largura = image->dim.altura;
+    transposed->pixels = (PixelGray*)malloc((transposed->dim.altura*transposed->dim.largura)*sizeof(PixelGray));
+    if(transposed->pixels == NULL){
+        printf("ERRO NA ALOCACAO DE MEMORIA PARA OS PIXELS DE TRANSPOSE GRAY.\n");
+        free(transposed);
+        return NULL;
+    }
+
+    for(int i = 0; i < image->dim.altura; i++){
+        for(int j = 0; j < image->dim.largura; j++){
+            transposed->pixels[j*transposed->dim.largura+i].value = image->pixels[i*image->dim.largura+j].value;
+        }
+    }
+
+    return transposed;
+}
+
+
 
 int cmpfunc(const void *a, const void *b) {
     return (*(int *)a - *(int *)b);
@@ -559,6 +588,84 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
+ImageRGB *randomicoRGB(ImageRGB *image, int num, int tW, int tH, int kernel){
+    int i, res;
+    srand(time(NULL));
+    ImageRGB *imgRand = (ImageRGB*)malloc(sizeof(ImageRGB));
+    ImageRGB *tempImage = image;
+
+    for(i = 0; i < num; i++){
+        res = rand() % 5 + 1;
+        if(res == 1){
+            imgRand = flip_vertical_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip vertical aplicado\n", i + 1);
+        }
+        else if(res == 2){
+            imgRand = flip_horizontal_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip horizontal aplicado\n", i + 1);
+        }
+        else if(res == 3){
+            imgRand = transpose_rgb(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Transpose aplicado\n", i + 1);
+        }
+        else if(res == 4){
+            imgRand = median_blur_rgb(tempImage, kernel);
+            tempImage = imgRand;
+            printf("\t%d - Efeito blur aplicado\n", i + 1);
+        }
+        else if(res == 5){
+            imgRand = clahe_rgb(tempImage, tW, tH);
+            tempImage = imgRand;
+            printf("\t%d - Efeito clahe aplicado\n", i + 1);
+        }
+    }
+
+    return imgRand;
+}
+
+ImageGray *randomicoGray(ImageGray *image, int num, int tW, int tH, int kernel){
+    int i, res;
+    srand(time(NULL));
+    ImageGray *imgRand = (ImageGray*)malloc(sizeof(ImageGray));
+    ImageGray *tempImage = image;
+
+    printf("\n");
+    for(i = 0; i < num; i++){
+        res = rand() % 5 + 1;
+        if(res == 1){
+            imgRand = flip_vertical_gray(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip vertical aplicado\n", i + 1);
+        }
+        else if(res == 2){
+            imgRand = flip_horizontal_gray(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Flip horizontal aplicado\n", i + 1);
+        }
+        else if(res == 3){
+            imgRand = transpose_gray(tempImage);
+            tempImage = imgRand;
+            printf("\t%d - Transpose aplicado\n", i + 1);
+        }
+        else if(res == 4){
+            imgRand = median_blur_gray(tempImage, kernel);
+            tempImage = imgRand;
+            printf("\t%d - Efeito blur aplicado\n", i + 1);
+        }
+        else if(res == 5){
+            imgRand = clahe_gray(tempImage, tW, tH);
+            tempImage = imgRand;
+            printf("\t%d - Efeito clahe aplicado\n", i + 1);
+        }
+    }
+
+    return imgRand;
+}
+
+
 ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l) {
     if (l == NULL) return NULL;
     while (l->ant != NULL) {
@@ -585,27 +692,28 @@ ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l) {
     return l->prox;
 }
 
-ElementoDuploGray* addInicioDuplamenteGray(ElementoDuploGray* l, ImageGray* image) {
+void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
     ElementoDuploGray *novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
-    if (novo == NULL) {
+    if (!novo) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
+    *l = retornaInicioGray(*l);
     novo->image = image;
-
-    if (l == NULL) {
-        novo->prox = NULL;
-        novo->ant = NULL;
-        return novo;
-    }
-    
-    ElementoDuploGray *inicio = retornaInicioGray(l);
-    
-    novo->prox = inicio;
     novo->ant = NULL;
-    inicio->ant = novo;
-    
-    return novo;
+
+    if (!*l) {
+        // Se a lista está vazia, o novo elemento será o único na lista
+        novo->prox = NULL;
+    } else {
+        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+        novo->prox = *l;
+        (*l)->ant = novo;
+    }
+
+    // Atualiza o ponteiro para o início da lista
+    *l = novo;
+    printf("Imagem adicionada ao historico.\n");
 }
 
 void mostrarHistoricoGray(ElementoDuploGray *l) {
@@ -653,6 +761,7 @@ void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
+    *l = retornaInicioRGB(*l);
     novo->image = image;
     novo->ant = NULL;
 
@@ -681,6 +790,34 @@ void mostrarHistoricoRGB(ElementoDuploRGB *l){
     else{
         printf("Nao ha imagens no historico.\n");
         return;
+    }
+}
+
+void freelistagray(ElementoDuploGray **l){
+    ElementoDuploGray *aux;
+    *l = retornaInicioGray(*l);
+    while(*l != NULL){
+        aux= *l;
+        *l= (*l)->prox;
+        printf("liberando imagem gray baby...\n");
+        free_image_gray(aux->image);
+        printf("Imagem gray liberada baby.\n");
+        free(aux);
+        printf("elemento da lista gray liberado baby.\n");
+    }
+}
+
+void freelistargb(ElementoDuploRGB **l){
+    ElementoDuploRGB *aux;
+    *l = retornaInicioRGB(*l);
+    while(*l != NULL){
+        aux = *l;
+        *l = (*l)->prox;
+        printf("liberando imagem rgb baby...\n");
+        free_image_rgb(aux->image);
+        printf("Imagem rgb liberada baby.\n");
+        free(aux);
+        printf("elemento da lista rgb liberado baby.\n");
     }
 }
 

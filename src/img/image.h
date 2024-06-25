@@ -54,11 +54,13 @@ void free_image_rgb(ImageRGB *image);
 ImageGray *flip_vertical_gray(ImageGray *image);
 ImageGray *flip_horizontal_gray(const ImageGray *image);
 ImageGray *transpose_gray(const ImageGray *image);
+ImageGray *randomicoGray(ImageGray *image, int num, int tW, int tH, int kernel);
 
 // Operações para ImageRGB
 ImageRGB *flip_vertical_rgb(const ImageRGB *image);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
 ImageRGB *transpose_rgb(const ImageRGB *image);
+ImageRGB *randomicoRGB(ImageRGB *image, int num, int tW, int tH, int kernel);
 
 // Manipulação por pixel para ImageGray
 ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
@@ -69,12 +71,14 @@ ImageRGB *clahe_rgb(const ImageRGB *image, int tile_width, int tile_height);
 ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
 
 // Manipulação de Lista Gray
-ElementoDuploGray* addInicioDuplamenteGray(ElementoDuploGray* l, ImageGray* image);
+void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image);
 ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l);
 ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l);
 ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l);
 ElementoDuploGray *retornaFimGray(ElementoDuploGray *l);
 void mostrarHistoricoGray(ElementoDuploGray *l);
+void freelistagray(ElementoDuploGray **l);
+
 
 // Manipulação de Lista RGB
 void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image);
@@ -83,5 +87,6 @@ void ImagemAnterior_RGB(ElementoDuploRGB **l);
 ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l);
 ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l);
 void mostrarHistoricoRGB(ElementoDuploRGB *l);
+void freelistargb(ElementoDuploRGB **l);
 
 int _main();

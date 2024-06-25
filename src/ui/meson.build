@@ -2,6 +2,8 @@ dep_gtk = dependency('gtk+-3.0')
 
 install_headers('interface.h')
 
+
+
 ui = static_library(
     'interface',
     'interface.c',
