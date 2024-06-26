@@ -1,0 +1,9 @@
+{
+    "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
+    "files.associations": {
+        "gtk.h": "c",
+        "stdio.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.default.compileCommands": "/home/naldim/ED-ImageProcessing/builddir/compile_commands.json"
+}
