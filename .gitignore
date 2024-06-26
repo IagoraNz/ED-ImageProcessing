@@ -11,3 +11,6 @@
 
 # Ignorar todos os arquivos executáveis no macOS
 *.dmg
+
+# Ignorar todos os arquivos de build
+.builddir
