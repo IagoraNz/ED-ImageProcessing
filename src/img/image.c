@@ -341,18 +341,6 @@ void histocumulativo(int *histograma, int *histocumulativo, int total_pixels, fl
     }
 }
 
-void aplicarClahe(ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height, int *histocumulativo_red, int *histocumulativo_green, int *histocumulativo_blue){
-    int i, j, idx;
-    for(i = tileY; i < tileY + tile_height && i < image->dim.altura; i++){
-        for(j = tileX; j < tileX + tile_width && j < image->dim.largura; j++){
-            idx = i * image->dim.largura + j;
-            image->pixels[idx].red = histocumulativo_red[image->pixels[idx].red];
-            image->pixels[idx].green = histocumulativo_green[image->pixels[idx].green];
-            image->pixels[idx].blue = histocumulativo_blue[image->pixels[idx].blue];
-        }
-    }
-}
-
 void homogeneizarClahe(ImageRGB *image, int tileX, int tileY, int tile_width, int tile_height,  int *histocumulativo_red, int *histocumulativo_green, int *histocumulativo_blue,  int *next_histocumulativo_red, int *next_histocumulativo_green, int *next_histocumulativo_blue, int *below_histocumulativo_red, int *below_histocumulativo_green, int *below_histocumulativo_blue, int *diag_histocumulativo_red, int *diag_histocumulativo_green, int *diag_histocumulativo_blue) {
     int i, j, idx, srcX, srcY, interRed, interGreen, interBlue;
     float razaoX, razaoY;
@@ -477,16 +465,6 @@ void histogramatile_gray(const ImageGray *image, int tileX, int tileY, int tile_
         for(j = tileX; j < tileX + tile_width && j < image->dim.largura; j++){
             idx = i * image->dim.largura + j;
             histogramagray[image->pixels[idx].value]++;
-        }
-    }
-}
-
-void aplicarClahe_gray(ImageGray *image, int tileX, int tileY, int tile_width, int tile_height, int *histocumulativo_gray){
-    int i, j, idx;
-    for(i = tileY; i < tileY + tile_height && i < image->dim.altura; i++){
-        for(j = tileX; j < tileX + tile_width && j < image->dim.largura; j++){
-            idx = i * image->dim.largura + j;
-            image->pixels[idx].value = histocumulativo_gray[image->pixels[idx].value];
         }
     }
 }
@@ -665,31 +643,12 @@ ImageGray *randomicoGray(ImageGray *image, int num, int tW, int tH, int kernel){
     return imgRand;
 }
 
-
 ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l) {
     if (l == NULL) return NULL;
     while (l->ant != NULL) {
         l = l->ant;
     }
     return l;
-}
-
-ElementoDuploGray *retornaFimGray(ElementoDuploGray *l) {
-    if (l == NULL) return NULL;
-    while (l->prox != NULL) {
-        l = l->prox;
-    }
-    return l;
-}
-
-ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l) {
-    if (l == NULL) return NULL;
-    return l->ant;
-}
-
-ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l) {
-    if (l == NULL) return NULL;
-    return l->prox;
 }
 
 void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
@@ -716,43 +675,11 @@ void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
     printf("Imagem adicionada ao historico.\n");
 }
 
-void mostrarHistoricoGray(ElementoDuploGray *l) {
-    if (l == NULL) {
-        printf("Nao ha imagens no historico.\n");
-        return;
-    }
-    
-    ElementoDuploGray *aux = retornaFimGray(l);
-    while (aux != NULL) {
-        exibir_image_gray(aux->image);
-        aux = aux->prox;
-    }
-}
-
 ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l){
     if (!l) return NULL;
     while(l->ant != NULL)
         l = l->ant;
-
     return l;
-}
-
-ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l){
-    if (!l) return NULL;
-    while(l->prox != NULL)
-        l = l->prox;
-
-    return l;
-}
-
-void ProximaImagem_RGB(ElementoDuploRGB **l){
-    if (!*l) return;
-    *l = (*l)->ant;
-}
-
-void ImagemAnterior_RGB(ElementoDuploRGB **l){
-    if (!*l) return;
-    *l = (*l)->prox;
 }
 
 void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
@@ -779,32 +706,16 @@ void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
     printf("Imagem adicionada ao historico.\n");
 }
 
-void mostrarHistoricoRGB(ElementoDuploRGB *l){
-    if(l){
-        ElementoDuploRGB *aux = retornaFimRGB(l);
-        while(aux){
-            exibir_image(aux->image);
-            aux = aux->prox;
-        }
-    }
-    else{
-        printf("Nao ha imagens no historico.\n");
-        return;
-    }
-}
-
 void freelistagray(ElementoDuploGray **l){
     ElementoDuploGray *aux;
     *l = retornaInicioGray(*l);
     while(*l != NULL){
         aux= *l;
         *l= (*l)->prox;
-        printf("liberando imagem gray baby...\n");
         free_image_gray(aux->image);
-        printf("Imagem gray liberada baby.\n");
         free(aux);
-        printf("elemento da lista gray liberado baby.\n");
     }
+    printf("Lista de imagens em tons de cinza liberada.\n");
 }
 
 void freelistargb(ElementoDuploRGB **l){
@@ -813,233 +724,8 @@ void freelistargb(ElementoDuploRGB **l){
     while(*l != NULL){
         aux = *l;
         *l = (*l)->prox;
-        printf("liberando imagem rgb baby...\n");
         free_image_rgb(aux->image);
-        printf("Imagem rgb liberada baby.\n");
         free(aux);
-        printf("elemento da lista rgb liberado baby.\n");
     }
-}
-
-int _main(){
-    FILE *arq = fopen("utils/input_image_example_RGB.txt", "r");
-    if(arq == NULL){
-        perror("Erro ao abrir o arquivo");
-        return 1;
-    }
-
-    FILE *arquivogray = fopen("utils/input_image_example_Gray.txt", "r");
-    if(arquivogray == NULL){
-        perror("ERRO AO ABRIR O ARQUIVO GRAY.");
-        return 1;
-    }
-
-    int altura, largura, tile_width, tile_height;
-
-    ImageRGB *image = NULL;
-    ImageGray *imagegray = NULL;
-
-    int opc, kernel_size;
-    do {
-        printf("_____ MENU ______\n");
-        printf("0 - Sair\n");
-        printf("1 - Criar imagem RGB\n");
-        printf("2 - CLAHE RGB\n");
-        printf("3 - RGB no blur\n");
-        printf("4 - TranposeRGB\n");
-        printf("5 - FlipVerticalRGB\n");
-        printf("6 - Converte RGB para Gray\n");
-        printf("7 - Criar imagem Gray\n");
-        printf("8 - FlipHorizontalRGB\n");
-        printf("9 - FlipHorizontalGRAY\n");
-        printf("10 - Gray no blur\n");
-        printf("11 - FlipVerticalGRAY\n");
-        printf("12 - CLAHE GRAY\n");
-        printf("Digite a opcao desejada: ");
-        scanf("%d", &opc);
-        switch (opc) {
-            case 0:
-                printf("Saindo...\n");
-                system("PAUSE");
-                system("cls");
-                break;
-            case 1:
-                if (image != NULL) {
-                    free_image_rgb(image);
-                }
-                fscanf(arq, "%d", &altura);
-                fscanf(arq, "%d", &largura);
-                image = create_image_rgb(largura, altura, arq);
-                printf("Imagem criada com sucesso!\n");
-                system("PAUSE");
-                system("cls");
-                break;
-            case 2:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    do{
-                        printf("Digite o tamanho do tile (largura): ");
-                        scanf("%d", &tile_width);
-                        printf("Digite o tamanho do tile (altura): ");
-                        scanf("%d", &tile_height);
-                    }while(tile_width <= 0 || tile_height <= 0);
-                    ImageRGB *new_image = clahe_rgb(image, tile_width, tile_height);
-                    exibir_image(new_image);
-                    free_image_rgb(new_image);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            case 3:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    do{
-                        printf("Digite o tamanho do kernel: ");
-                        scanf("%d", &kernel_size);
-                        if(kernel_size % 2 == 0){
-                            printf("O tamanho precisa ser impar\n");
-                        }
-                    }while(kernel_size % 2 == 0);
-                    ImageRGB *new_image = median_blur_rgb(image, kernel_size);
-                    exibir_image(new_image);
-                    free_image_rgb(new_image);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            case 4:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    ImageRGB *transposed = transpose_rgb(image);
-                    system("PAUSE");
-                    exibir_image(transposed);
-                    transposed = transpose_rgb(transposed);
-                    system("PAUSE");
-                    exibir_image(transposed);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            case 5:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    ImageRGB *flipVert = flip_vertical_rgb(image);
-                    system("PAUSE");
-                    exibir_image(flipVert);
-                    flipVert = flip_vertical_rgb(flipVert);
-                    system("PAUSE");
-                    exibir_image(flipVert);
-                }
-                break;
-            case 6:
-                if(!image){
-                    printf("Crie uma imagem RGB primeiro!\n");
-                } 
-                else{
-                    ImageGray *imagegray = conversion_image_gray(image);
-                    system("PAUSE");
-                    exibir_image_gray(imagegray);
-                    free_image_gray(imagegray);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            case 7:
-                if(imagegray != NULL){
-                    free_image_gray(imagegray);
-                }
-                fscanf(arquivogray, "%d", &altura);
-                fscanf(arquivogray, "%d", &largura);
-                imagegray = create_image_gray(largura, altura, arquivogray);
-                printf("IMAGEM EM ESCALA DE CINZA CRIADA COM SUCESSO!\n");
-                break;
-            case 8:
-                if(!image){
-                    printf("CRIE UMA IMAGEM RGB PRIMEIRO!\n");
-                }else{
-                    ImageRGB *flipHorizontal = flip_horizontal_rgb(image);
-                    exibir_image(flipHorizontal);
-                    free_image_rgb(flipHorizontal);
-                }
-                break;
-            case 9:
-                if(!imagegray){
-                    printf("CRIE UMA IMAGEM GRAY PRIMEIRO!\n");
-                }else{
-                    ImageGray *flipGray = flip_horizontal_gray(imagegray);
-                    exibir_image_gray(flipGray);
-                    free_image_gray(flipGray);
-                }
-                // exibir_image_gray(imagegray);
-                break;
-            case 10:
-                if(!imagegray){
-                    printf("Crie uma imagem gray primeiro!\n");
-                } 
-                else{
-                    do{
-                        printf("Digite o tamanho do kernel: ");
-                        scanf("%d", &kernel_size);
-                        if(kernel_size % 2 == 0){
-                            printf("O tamanho precisa ser impar\n");
-                        }
-                    }while(kernel_size % 2 == 0);
-                    ImageGray *new_image = median_blur_gray(imagegray, kernel_size);
-                    exibir_image_gray(new_image);
-                    free_image_gray(new_image);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            
-            case 11:
-                if(!imagegray){
-                    printf("Crie uma imagem gray primeiro!\n");
-                } 
-                else{
-                    ImageGray *flipGray = flip_vertical_gray(imagegray);
-                    exibir_image_gray(flipGray);
-                    free_image_gray(flipGray);
-                }
-                break;
-            case 12:
-                if(!imagegray){
-                    printf("Crie uma imagem gray primeiro!\n");
-                } 
-                else{
-                    do{
-                        printf("Digite o tamanho do tile (largura): ");
-                        scanf("%d", &tile_width);
-                        printf("Digite o tamanho do tile (altura): ");
-                        scanf("%d", &tile_height);
-                    }while(tile_width <= 0 || tile_height <= 0);
-                    ImageGray *new_image = clahe_gray(imagegray, tile_width, tile_height);
-                    exibir_image_gray(new_image);
-                    free_image_gray(new_image);
-                }
-                system("PAUSE");
-                system("cls");
-                break;
-            default:
-                printf("Opcao invalida!\n");
-                system("PAUSE");
-                system("cls");
-        }
-    }while(opc != 0);
-
-    if(image != NULL){
-        free_image_rgb(image);
-    }
-    fclose(arq);
-
-    return 0;
-
+    printf("Lista de imagens RGB liberada.\n");
 }

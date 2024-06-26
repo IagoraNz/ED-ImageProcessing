@@ -72,21 +72,10 @@ ImageRGB *median_blur_rgb(const ImageRGB *image, int kernel_size);
 
 // Manipulação de Lista Gray
 void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image);
-ElementoDuploGray *ProximaImagemGray(ElementoDuploGray *l);
-ElementoDuploGray *ImagemAnteriorGray(ElementoDuploGray *l);
 ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l);
-ElementoDuploGray *retornaFimGray(ElementoDuploGray *l);
-void mostrarHistoricoGray(ElementoDuploGray *l);
 void freelistagray(ElementoDuploGray **l);
-
 
 // Manipulação de Lista RGB
 void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image);
-void ProximaImagem_RGB(ElementoDuploRGB **l);
-void ImagemAnterior_RGB(ElementoDuploRGB **l);
 ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l);
-ElementoDuploRGB *retornaFimRGB(ElementoDuploRGB *l);
-void mostrarHistoricoRGB(ElementoDuploRGB *l);
 void freelistargb(ElementoDuploRGB **l);
-
-int _main();

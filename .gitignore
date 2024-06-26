@@ -1,3 +1,13 @@
 .DS_Store
 .output
 .builddir/output_image.png
+
+# Ignorar todos os arquivos executáveis no Windows
+*.exe
+
+# Ignorar todos os arquivos executáveis no Linux
+*.out
+*.run
+
+# Ignorar todos os arquivos executáveis no macOS
+*.dmg

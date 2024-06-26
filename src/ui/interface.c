@@ -141,7 +141,7 @@ void save_current_image(GtkWidget *widget, gpointer data) {
         return;
     }
 
-    const char *output_path = "output_image.png"; // Pode mudar para outro caminho ou pedir ao usuário para escolher
+    const char *output_path = "../utils/output_image_rgb.png"; // Pode mudar para outro caminho ou pedir ao usuário para escolher
     GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, current_image->image->dim.largura, current_image->image->dim.altura);
     set_img_to_pixbuf_rgb(pixbuf, current_image->image);
     gdk_pixbuf_save(pixbuf, output_path, "png", NULL, NULL);
@@ -366,7 +366,7 @@ void save_current_image_gray(GtkWidget *widget, gpointer data) {
         return;
     }
 
-    const char *output_path = "output_image_gray.png"; // Pode mudar para outro caminho ou pedir ao usuário para escolher
+    const char *output_path = "../utils/output_image_gray.png"; // Pode mudar para outro caminho ou pedir ao usuário para escolher
     GdkPixbuf *pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, FALSE, 8, current_image_gray->image->dim.largura, current_image_gray->image->dim.altura);
     set_img_to_pixbuf_gray(pixbuf, current_image_gray->image);
     gdk_pixbuf_save(pixbuf, output_path, "png", NULL, NULL);
@@ -570,8 +570,10 @@ void on_open_image(GtkWidget *widget, gpointer data) {
     res = gtk_dialog_run(GTK_DIALOG(dialog));
     if (res == GTK_RESPONSE_ACCEPT) {
         char *file_path = gtk_file_chooser_get_filename(chooser);
-        int target_width = 512; // Definir o tamanho desejado em pixels
-        int target_height = 512;
+        // Definir o tamanho desejado em pixels
+        int target_width = 512; 
+        int target_height = 512; 
+        
         txt_from_resized_image_rgb(file_path, "input_rgb.txt", target_width, target_height);
         g_free(file_path);
     }
