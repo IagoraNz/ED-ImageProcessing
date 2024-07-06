@@ -104,11 +104,19 @@ void blur_click(GtkWidget *widget, gpointer data) {
 
 void random_click(GtkWidget *widget, gpointer data) {
     update_values(widget, data);
+    srand(time(NULL));
+    int i, res;
+    ImageRGB *tempImage = current_image->image;
+    for(i = 0; i < quantidade; i++){
+        res = rand() % 5 + 1;
+        tempImage = randomicoRGB(tempImage, res, tilew, tileh, kernel);
+        addInicioDuplamente_RGB(&current_image, tempImage);
+    }
 
-    addInicioDuplamente_RGB(&current_image, randomicoRGB(current_image->image, quantidade, tilew, tileh, kernel));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
 }
+
 
 // Função para o evento de clique no botão anterior
 void previous_click(GtkWidget *widget, gpointer data) {
@@ -332,8 +340,15 @@ void blur_click_gray(GtkWidget *widget, gpointer data) {
 
 void random_click_gray(GtkWidget *widget, gpointer data) {
     update_values(widget, data);
+    srand(time(NULL));
+    int i, res;
+    ImageGray *tempImage = current_image_gray->image;
+    for(i = 0; i < quantidade; i++) {
+        res = rand() % 5 + 1;
+        tempImage = randomicoGray(tempImage, res, tilew, tileh, kernel);
+        addInicioDuplamente_Gray(&current_image_gray, tempImage);
+    }
 
-    addInicioDuplamente_Gray(&current_image_gray, randomicoGray(current_image_gray->image, quantidade, tilew, tileh, kernel));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
 }

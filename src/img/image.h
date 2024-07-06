@@ -54,13 +54,13 @@ void free_image_rgb(ImageRGB *image);
 ImageGray *flip_vertical_gray(ImageGray *image);
 ImageGray *flip_horizontal_gray(const ImageGray *image);
 ImageGray *transpose_gray(const ImageGray *image);
-ImageGray *randomicoGray(ImageGray *image, int num, int tW, int tH, int kernel);
+ImageGray *randomicoGray(ImageGray *image, int res, int tW, int tH, int kernel);
 
 // Operações para ImageRGB
 ImageRGB *flip_vertical_rgb(const ImageRGB *image);
 ImageRGB *flip_horizontal_rgb(const ImageRGB *image);
 ImageRGB *transpose_rgb(const ImageRGB *image);
-ImageRGB *randomicoRGB(ImageRGB *image, int num, int tW, int tH, int kernel);
+ImageRGB *randomicoRGB(ImageRGB *image, int res, int tW, int tH, int kernel);
 
 // Manipulação por pixel para ImageGray
 ImageGray *clahe_gray(const ImageGray *image, int tile_width, int tile_height);
