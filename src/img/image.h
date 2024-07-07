@@ -79,3 +79,7 @@ void freelistagray(ElementoDuploGray **l);
 void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image);
 ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l);
 void freelistargb(ElementoDuploRGB **l);
+
+// Manipulação de Lista Gray e RGB randomico
+void freelistargbRand(ElementoDuploRGB **l);
+void freelistagrayRand(ElementoDuploGray **l);

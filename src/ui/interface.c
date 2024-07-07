@@ -45,10 +45,12 @@ int get_input_value(const char *message) {
 }
 
 void update_values(GtkWidget *widget, gpointer data) {
-    quantidade = get_input_value("Enter quantidade:");
-    tilew = get_input_value("Enter tilew:");
-    tileh = get_input_value("Enter tileh:");
-    kernel = get_input_value("Enter kernel:");
+    (void) widget;
+    (void) data;
+    quantidade = get_input_value("Enter quantidade");
+    tilew = get_input_value("Enter tile width");
+    tileh = get_input_value("Enter tile heigth");
+    kernel = get_input_value("Enter kernel size");
 }
 
 // Função para exibir uma imagem RGB em uma janela GTK
@@ -67,33 +69,43 @@ void update_navigation_buttons(ElementoDuploRGB *lista) {
 
 // Função para o evento de clique no botão de transposição
 void transpose_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_RGB(&current_image, transpose_rgb(current_image->image));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
 }
 
 void clahe_click(GtkWidget *widget, gpointer data) {
-    tileh = get_input_value("Enter tileh:");
-    tilew = get_input_value("Enter tilew:");
+    (void) widget;
+    (void) data;
+    tileh = get_input_value("Enter tile heigth");
+    tilew = get_input_value("Enter tile width");
     addInicioDuplamente_RGB(&current_image, clahe_rgb(current_image->image, tilew, tileh));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
 }
 
 void flip_vertical_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_RGB(&current_image, flip_vertical_rgb(current_image->image));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
 }
 
 void flip_horizontal_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_RGB(&current_image, flip_horizontal_rgb(current_image->image));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
 }
 
 void blur_click(GtkWidget *widget, gpointer data) {
-    kernel = get_input_value("Enter kernel:");
+    (void) widget;
+    (void) data;
+    kernel = get_input_value("Enter kernel size");
     if (kernel % 2 == 0) {
         kernel++;
     }
@@ -103,6 +115,8 @@ void blur_click(GtkWidget *widget, gpointer data) {
 }
 
 void random_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     update_values(widget, data);
     srand(time(NULL));
     int i, res;
@@ -120,6 +134,8 @@ void random_click(GtkWidget *widget, gpointer data) {
 
 // Função para o evento de clique no botão anterior
 void previous_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image->prox != NULL) {
         current_image = current_image->prox;
         printf("Previous image dimensions: %d x %d\n", current_image->image->dim.altura, current_image->image->dim.largura); // Log
@@ -132,6 +148,8 @@ void previous_click(GtkWidget *widget, gpointer data) {
 
 // Função para o evento de clique no botão próximo
 void next_click(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image->ant != NULL) {
         current_image = current_image->ant;
         printf("Next image dimensions: %d x %d\n", current_image->image->dim.altura, current_image->image->dim.largura); // Log
@@ -144,8 +162,10 @@ void next_click(GtkWidget *widget, gpointer data) {
 
 // Função para salvar a imagem atual
 void save_current_image(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image == NULL || current_image->image == NULL) {
-        fprintf(stderr, "Não há imagem atual para salvar.\n");
+        fprintf(stderr, "Não ha imagem atual para salvar.\n");
         return;
     }
 
@@ -160,6 +180,8 @@ void save_current_image(GtkWidget *widget, gpointer data) {
 
 // Função callback para o evento de fechamento da janela RGB
 gboolean on_window_close_rgb(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+    (void) widget;
+    (void) event;
     freelistargb(user_data);
     gtk_main_quit();  // Encerra o loop principal do GTK
     return FALSE;  // Retorna FALSE para permitir o fechamento padrão da janela
@@ -190,38 +212,54 @@ void show_interface_rgb() {
     // Inicializando o GTK
     gtk_init(NULL, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "RGB-Interface");
-    gtk_window_set_default_size(GTK_WINDOW(window), image->dim.largura + 200, image->dim.altura + 200);
+    gtk_window_set_title(GTK_WINDOW(window), "Interface RGB");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
     g_signal_connect(window, "delete-event", G_CALLBACK(on_window_close_rgb), &current_image);
 
     // Criando um GtkBox para organizar os botões e a imagem
-    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
 
     // Criando um container para os botões superiores
-    GtkWidget *button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+    GtkWidget *button_box = gtk_button_box_new(GTK_ORIENTATION_VERTICAL);
     gtk_container_set_border_width(GTK_CONTAINER(button_box), 10);
-    gtk_box_pack_start(GTK_BOX(main_box), button_box, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(main_box), button_box, TRUE, TRUE, 0);
 
     // Criando os botões superiores
     GtkWidget *button1 = gtk_button_new_with_label("Blur");
-    GtkWidget *button2 = gtk_button_new_with_label("FlipVertical");
+    GtkWidget *button2 = gtk_button_new_with_label("Flip vertical");
     GtkWidget *button3 = gtk_button_new_with_label("Clahe");
-    GtkWidget *button4 = gtk_button_new_with_label("FlipHorizontal");
+    GtkWidget *button4 = gtk_button_new_with_label("Flip horizontal");
     GtkWidget *button5 = gtk_button_new_with_label("Transpose");
-    GtkWidget *button6 = gtk_button_new_with_label("Randomico");
+    GtkWidget *button6 = gtk_button_new_with_label("Randômico");
+    GtkWidget *spacer = gtk_label_new("       ");
+    GtkWidget *spacer2 = gtk_label_new("");
+    button_previous = gtk_button_new_with_label("<");
+    button_next = gtk_button_new_with_label(">");
     GtkWidget *button_save = gtk_button_new_with_label("Salvar");
 
     // Empacotando os botões superiores no container
-    gtk_box_pack_start(GTK_BOX(button_box), button1, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button2, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button3, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button4, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button5, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button6, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button_save, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button1, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button3, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button4, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button5, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button6, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button_save, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), spacer, TRUE, TRUE, 0);
+
+    GtkWidget *historic_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    // gtk_container_set_border_width(GTK_CONTAINER(historic_box), 10);
+    gtk_box_pack_start(GTK_BOX(button_box), historic_box, TRUE, TRUE, 0);
+
+    gtk_box_pack_start(GTK_BOX(historic_box), button_previous, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(historic_box), spacer2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(historic_box), button_next, TRUE, TRUE, 0);
+
+    // Conectando os sinais dos botões
+    g_signal_connect(button_previous, "clicked", G_CALLBACK(previous_click), NULL);
+    g_signal_connect(button_next, "clicked", G_CALLBACK(next_click), NULL);
 
     // Conectando os sinais dos botões
     g_signal_connect(button5, "clicked", G_CALLBACK(transpose_click), NULL);
@@ -235,26 +273,10 @@ void show_interface_rgb() {
     // Criando um container para a imagem
     image_widget = gtk_image_new();
     gtk_box_pack_start(GTK_BOX(main_box), image_widget, TRUE, TRUE, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(main_box), 10);
 
     // Exibindo a imagem inicial
     show_image_rgb(current_image->image, image_widget);
-
-    // Criando um container para os botões inferiores
-    GtkWidget *bottom_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_container_set_border_width(GTK_CONTAINER(bottom_box), 10);
-    gtk_box_pack_end(GTK_BOX(main_box), bottom_box, FALSE, FALSE, 0);
-
-    // Criando os botões inferiores
-    button_previous = gtk_button_new_with_label("Anterior");
-    button_next = gtk_button_new_with_label("Próximo");
-
-    // Conectando os sinais dos botões
-    g_signal_connect(button_previous, "clicked", G_CALLBACK(previous_click), NULL);
-    g_signal_connect(button_next, "clicked", G_CALLBACK(next_click), NULL);
-
-    // Empacotando os botões inferiores no container
-    gtk_box_pack_end(GTK_BOX(bottom_box), button_previous, FALSE, FALSE, 0);
-    gtk_box_pack_end(GTK_BOX(bottom_box), button_next, FALSE, FALSE, 0);
 
     // Atualizando a sensibilidade dos botões de navegação
     update_navigation_buttons(current_image);
@@ -303,33 +325,43 @@ void update_navigation_buttons_gray(ElementoDuploGray *lista) {
 }
 
 void transpose_click_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_Gray(&current_image_gray, transpose_gray(current_image_gray->image));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
 }
 
 void clahe_click_gray(GtkWidget *widget, gpointer data) {
-    tileh = get_input_value("Enter tileh:");
-    tilew = get_input_value("Enter tilew:");
+    (void) widget;
+    (void) data;
+    tileh = get_input_value("Enter tile heigth");
+    tilew = get_input_value("Enter tile width");
     addInicioDuplamente_Gray(&current_image_gray, clahe_gray(current_image_gray->image, tilew, tileh));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
 }
 
 void flip_vertical_click_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_Gray(&current_image_gray, flip_vertical_gray(current_image_gray->image));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
 }
 
 void flip_horizontal_click_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     addInicioDuplamente_Gray(&current_image_gray, flip_horizontal_gray(current_image_gray->image));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
 }
 
 void blur_click_gray(GtkWidget *widget, gpointer data) {
-    kernel = get_input_value("Enter kernel:");
+    (void) widget;
+    (void) data;
+    kernel = get_input_value("Enter kernel size");
     if (kernel % 2 == 0) {
         kernel++;
     }
@@ -354,6 +386,8 @@ void random_click_gray(GtkWidget *widget, gpointer data) {
 }
 
 void previous_click_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image_gray->prox != NULL) {
         current_image_gray = current_image_gray->prox;
         printf("Previous image dimensions: %d x %d\n", current_image_gray->image->dim.altura, current_image_gray->image->dim.largura); // Log
@@ -365,6 +399,8 @@ void previous_click_gray(GtkWidget *widget, gpointer data) {
 }
 
 void next_click_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image_gray->ant != NULL) {
         current_image_gray = current_image_gray->ant;
         printf("Next image dimensions: %d x %d\n", current_image_gray->image->dim.altura, current_image_gray->image->dim.largura); // Log
@@ -376,8 +412,10 @@ void next_click_gray(GtkWidget *widget, gpointer data) {
 }
 
 void save_current_image_gray(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     if (current_image_gray == NULL || current_image_gray->image == NULL) {
-        fprintf(stderr, "Não há imagem atual para salvar.\n");
+        fprintf(stderr, "Não ha imagem atual para salvar.\n");
         return;
     }
 
@@ -391,6 +429,8 @@ void save_current_image_gray(GtkWidget *widget, gpointer data) {
 }
 
 gboolean on_window_close_gray(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+    (void) widget;
+    (void) event;
     freelistagray(user_data);
     gtk_main_quit();  // Encerra o loop principal do GTK
     return FALSE;  // Retorna FALSE para permitir o fechamento padrão da janela
@@ -420,38 +460,54 @@ void show_interface_gray() {
     // Inicializando o GTK
     gtk_init(NULL, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Gray-Interface");
-    gtk_window_set_default_size(GTK_WINDOW(window), image->dim.largura + 200, image->dim.altura + 200);
+    gtk_window_set_title(GTK_WINDOW(window), "Interface Gray");
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
     g_signal_connect(window, "delete-event", G_CALLBACK(on_window_close_gray), &current_image_gray);
 
     // Criando um GtkBox para organizar os botões e a imagem
-    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+    GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
 
     // Criando um container para os botões superiores
-    GtkWidget *button_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
+    GtkWidget *button_box = gtk_button_box_new(GTK_ORIENTATION_VERTICAL);
     gtk_container_set_border_width(GTK_CONTAINER(button_box), 10);
-    gtk_box_pack_start(GTK_BOX(main_box), button_box, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(main_box), button_box, TRUE, TRUE, 0);
 
     // Criando os botões superiores
     GtkWidget *button1 = gtk_button_new_with_label("Blur");
-    GtkWidget *button2 = gtk_button_new_with_label("FlipVertical");
+    GtkWidget *button2 = gtk_button_new_with_label("Flip vertical");
     GtkWidget *button3 = gtk_button_new_with_label("Clahe");
-    GtkWidget *button4 = gtk_button_new_with_label("FlipHorizontal");
+    GtkWidget *button4 = gtk_button_new_with_label("Flip horizontal");
     GtkWidget *button5 = gtk_button_new_with_label("Transpose");
-    GtkWidget *button6 = gtk_button_new_with_label("Randomico");
+    GtkWidget *button6 = gtk_button_new_with_label("Randômico");
+    GtkWidget *spacer = gtk_label_new("       ");
+    GtkWidget *spacer2 = gtk_label_new("");
+    button_previous_gray = gtk_button_new_with_label("<");
+    button_next_gray = gtk_button_new_with_label(">");
     GtkWidget *button_save = gtk_button_new_with_label("Salvar");
 
     // Empacotando os botões superiores no container
-    gtk_box_pack_start(GTK_BOX(button_box), button1, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button2, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button3, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button4, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button5, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button6, FALSE, FALSE, 0);
-    gtk_box_pack_start(GTK_BOX(button_box), button_save, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button1, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button3, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button4, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button5, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button6, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), button_save, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(button_box), spacer, TRUE, TRUE, 0);
+
+    GtkWidget *historic_box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    // gtk_container_set_border_width(GTK_CONTAINER(historic_box), 10);
+    gtk_box_pack_start(GTK_BOX(button_box), historic_box, TRUE, TRUE, 0);
+
+    gtk_box_pack_start(GTK_BOX(historic_box), button_previous_gray, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(historic_box), spacer2, TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(historic_box), button_next_gray, TRUE, TRUE, 0);
+
+    // Conectando os sinais dos botões
+    g_signal_connect(button_previous_gray, "clicked", G_CALLBACK(previous_click_gray), NULL);
+    g_signal_connect(button_next_gray, "clicked", G_CALLBACK(next_click_gray), NULL);
 
     // Conectando os sinais dos botões
     g_signal_connect(button5, "clicked", G_CALLBACK(transpose_click_gray), NULL);
@@ -465,26 +521,10 @@ void show_interface_gray() {
     // Criando um container para a imagem
     image_widget_gray = gtk_image_new();
     gtk_box_pack_start(GTK_BOX(main_box), image_widget_gray, TRUE, TRUE, 0);
+    gtk_container_set_border_width(GTK_CONTAINER(main_box), 10);
 
     // Exibindo a imagem inicial
     show_image_gray(current_image_gray->image, image_widget_gray);
-
-    // Criando um container para os botões inferiores
-    GtkWidget *bottom_box = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
-    gtk_container_set_border_width(GTK_CONTAINER(bottom_box), 10);
-    gtk_box_pack_end(GTK_BOX(main_box), bottom_box, FALSE, FALSE, 0);
-
-    // Criando os botões inferiores
-    button_previous_gray = gtk_button_new_with_label("Anterior");
-    button_next_gray = gtk_button_new_with_label("Próximo");
-
-    // Conectando os sinais dos botões
-    g_signal_connect(button_previous_gray, "clicked", G_CALLBACK(previous_click_gray), NULL);
-    g_signal_connect(button_next_gray, "clicked", G_CALLBACK(next_click_gray), NULL);
-
-    // Empacotando os botões inferiores no container
-    gtk_box_pack_end(GTK_BOX(bottom_box), button_previous_gray, FALSE, FALSE, 0);
-    gtk_box_pack_end(GTK_BOX(bottom_box), button_next_gray, FALSE, FALSE, 0);
 
     // Atualizando a sensibilidade dos botões de navegação
     update_navigation_buttons_gray(current_image_gray);
@@ -497,7 +537,6 @@ void show_interface_gray() {
     
     current_image_gray = NULL;
 }
-
 
 int width, height;
 
@@ -551,6 +590,8 @@ void txt_from_resized_image_rgb(const char *image_path, const char *output_path,
 
 // Função para abrir o diálogo de seleção de arquivo e redimensionar a imagem
 void on_open_image(GtkWidget *widget, gpointer data) {
+    (void) widget;
+    (void) data;
     GtkWidget *dialog;
     GtkFileChooser *chooser;
     GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
@@ -625,8 +666,10 @@ void load_click(GtkWidget *widget, gpointer data) {
 // Função para exibir a interface principal
 void show_main_interface() {
     gtk_init(NULL, NULL);
+    GtkSettings *settings = gtk_settings_get_default();
+    g_object_set(settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Main-Interface");
+    gtk_window_set_title(GTK_WINDOW(window), "Interface principal");
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
 
@@ -635,7 +678,7 @@ void show_main_interface() {
 
     GtkWidget *button_rgb = gtk_button_new_with_label("Interface RGB");
     GtkWidget *button_gray = gtk_button_new_with_label("Interface Gray");
-    GtkWidget *button_load = gtk_button_new_with_label("Carregar Imagem");
+    GtkWidget *button_load = gtk_button_new_with_label("Carregar imagem");
     GtkWidget *button_exit = gtk_button_new_with_label("Sair");
 
     gtk_box_pack_start(GTK_BOX(main_box), button_rgb, TRUE, TRUE, 0);

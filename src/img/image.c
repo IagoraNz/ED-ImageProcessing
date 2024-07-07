@@ -635,15 +635,14 @@ void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
-    *l = retornaInicioGray(*l);
+    
     novo->image = image;
     novo->ant = NULL;
 
-    if (!*l) {
-        // Se a lista está vazia, o novo elemento será o único na lista
+    if(!*l){
         novo->prox = NULL;
-    } else {
-        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+    } 
+    else{
         novo->prox = *l;
         (*l)->ant = novo;
     }
@@ -666,20 +665,17 @@ void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
-    *l = retornaInicioRGB(*l);
     novo->image = image;
     novo->ant = NULL;
 
-    if (!*l) {
-        // Se a lista está vazia, o novo elemento será o único na lista
+    if(!*l){
         novo->prox = NULL;
-    } else {
-        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+    } 
+    else{
         novo->prox = *l;
         (*l)->ant = novo;
     }
 
-    // Atualiza o ponteiro para o início da lista
     *l = novo;
     printf("Imagem adicionada ao historico.\n");
 }
