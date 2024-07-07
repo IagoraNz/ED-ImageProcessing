@@ -566,78 +566,56 @@ ImageGray *flip_vertical_gray(ImageGray *image){
     return flipVert;
 }
 
-ImageRGB *randomicoRGB(ImageRGB *image, int num, int tW, int tH, int kernel){
-    int i, res;
-    srand(time(NULL));
+ImageRGB *randomicoRGB(ImageRGB *image, int res, int tW, int tH, int kernel) {
     ImageRGB *imgRand = (ImageRGB*)malloc(sizeof(ImageRGB));
-    ImageRGB *tempImage = image;
 
-    for(i = 0; i < num; i++){
-        res = rand() % 5 + 1;
-        if(res == 1){
-            imgRand = flip_vertical_rgb(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Flip vertical aplicado\n", i + 1);
-        }
-        else if(res == 2){
-            imgRand = flip_horizontal_rgb(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Flip horizontal aplicado\n", i + 1);
-        }
-        else if(res == 3){
-            imgRand = transpose_rgb(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Transpose aplicado\n", i + 1);
-        }
-        else if(res == 4){
-            imgRand = median_blur_rgb(tempImage, kernel);
-            tempImage = imgRand;
-            printf("\t%d - Efeito blur aplicado\n", i + 1);
-        }
-        else if(res == 5){
-            imgRand = clahe_rgb(tempImage, tW, tH);
-            tempImage = imgRand;
-            printf("\t%d - Efeito clahe aplicado\n", i + 1);
-        }
+    if(res == 1){
+        imgRand = flip_vertical_rgb(image);
+        printf("\tFlip vertical aplicado\n");
+    } 
+    else if(res == 2){
+        imgRand = flip_horizontal_rgb(image);
+        printf("\tFlip horizontal aplicado\n");
+    } 
+    else if(res == 3){
+        imgRand = transpose_rgb(image);
+        printf("\tTranspose aplicado\n");
+    } 
+    else if(res == 4){
+        imgRand = median_blur_rgb(image, kernel);
+        printf("\tEfeito blur aplicado\n");
+    } 
+    else if(res == 5){
+        imgRand = clahe_rgb(image, tW, tH);
+        printf("\tEfeito clahe aplicado\n");
     }
 
     return imgRand;
 }
 
-ImageGray *randomicoGray(ImageGray *image, int num, int tW, int tH, int kernel){
-    int i, res;
-    srand(time(NULL));
-    ImageGray *imgRand = (ImageGray*)malloc(sizeof(ImageGray));
-    ImageGray *tempImage = image;
 
-    printf("\n");
-    for(i = 0; i < num; i++){
-        res = rand() % 5 + 1;
-        if(res == 1){
-            imgRand = flip_vertical_gray(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Flip vertical aplicado\n", i + 1);
-        }
-        else if(res == 2){
-            imgRand = flip_horizontal_gray(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Flip horizontal aplicado\n", i + 1);
-        }
-        else if(res == 3){
-            imgRand = transpose_gray(tempImage);
-            tempImage = imgRand;
-            printf("\t%d - Transpose aplicado\n", i + 1);
-        }
-        else if(res == 4){
-            imgRand = median_blur_gray(tempImage, kernel);
-            tempImage = imgRand;
-            printf("\t%d - Efeito blur aplicado\n", i + 1);
-        }
-        else if(res == 5){
-            imgRand = clahe_gray(tempImage, tW, tH);
-            tempImage = imgRand;
-            printf("\t%d - Efeito clahe aplicado\n", i + 1);
-        }
+ImageGray *randomicoGray(ImageGray *image, int res, int tW, int tH, int kernel){
+    ImageGray *imgRand = (ImageGray*)malloc(sizeof(ImageGray));
+
+    if(res == 1){
+        imgRand = flip_vertical_gray(image);
+        printf("\tFlip vertical aplicado\n");
+    }
+    else if(res == 2){
+        imgRand = flip_horizontal_gray(image);
+        printf("\tFlip horizontal aplicado\n");
+    }
+    else if(res == 3){
+        imgRand = transpose_gray(image);
+        printf("\tTranspose aplicado\n");
+    }
+    else if(res == 4){
+        imgRand = median_blur_gray(image, kernel);
+        printf("\tEfeito blur aplicado\n");
+    }
+    else if(res == 5){
+        imgRand = clahe_gray(image, tW, tH);
+        printf("\tEfeito clahe aplicado\n");
     }
 
     return imgRand;
@@ -657,15 +635,14 @@ void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
-    *l = retornaInicioGray(*l);
+    
     novo->image = image;
     novo->ant = NULL;
 
-    if (!*l) {
-        // Se a lista está vazia, o novo elemento será o único na lista
+    if(!*l){
         novo->prox = NULL;
-    } else {
-        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+    } 
+    else{
         novo->prox = *l;
         (*l)->ant = novo;
     }
@@ -688,20 +665,17 @@ void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
-    *l = retornaInicioRGB(*l);
     novo->image = image;
     novo->ant = NULL;
 
-    if (!*l) {
-        // Se a lista está vazia, o novo elemento será o único na lista
+    if(!*l){
         novo->prox = NULL;
-    } else {
-        // Caso contrário, ajusta os ponteiros para incluir o novo elemento no início
+    } 
+    else{
         novo->prox = *l;
         (*l)->ant = novo;
     }
 
-    // Atualiza o ponteiro para o início da lista
     *l = novo;
     printf("Imagem adicionada ao historico.\n");
 }
