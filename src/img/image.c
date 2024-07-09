@@ -629,11 +629,29 @@ ElementoDuploGray *retornaInicioGray(ElementoDuploGray *l) {
     return l;
 }
 
+void freeGray(ElementoDuploGray *l) {
+    ElementoDuploGray *aux;
+    while (l != NULL) {
+        aux = l;
+        l = l->ant;
+        free_image_gray(aux->image);
+        free(aux);
+        printf("Lista de imagen!\n");
+    }
+}
+
 void addInicioDuplamente_Gray(ElementoDuploGray **l, ImageGray *image) {
     ElementoDuploGray *novo = (ElementoDuploGray*)malloc(sizeof(ElementoDuploGray));
     if (!novo) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
+    }
+
+    if (*l != NULL){
+        if ((*l)->ant != NULL){
+            freeGray((*l)->ant);
+            (*l)->ant = NULL;
+        }
     }
     
     novo->image = image;
@@ -659,12 +677,31 @@ ElementoDuploRGB *retornaInicioRGB(ElementoDuploRGB *l){
     return l;
 }
 
+void freeRGB(ElementoDuploRGB *l){
+    ElementoDuploRGB *aux;
+    while(l != NULL){
+        aux = l;
+        l = l->ant;
+        free_image_rgb(aux->image);
+        free(aux);
+    }
+    printf("Lista de imagens!\n");
+}
+
 void addInicioDuplamente_RGB(ElementoDuploRGB **l, ImageRGB *image) {
     ElementoDuploRGB *novo = (ElementoDuploRGB*)malloc(sizeof(ElementoDuploRGB));
     if (!novo) {
         fprintf(stderr, "Erro ao alocar memoria\n");
         exit(1);
     }
+
+    if (*l != NULL){
+        if ((*l)->ant != NULL){
+            freeRGB((*l)->ant);
+            (*l)->ant = NULL;
+        }
+    }
+
     novo->image = image;
     novo->ant = NULL;
 

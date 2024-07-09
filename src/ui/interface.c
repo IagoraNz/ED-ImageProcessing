@@ -35,12 +35,20 @@ int get_input_value(const char *message) {
     gtk_box_pack_start(GTK_BOX(content_area), entry, TRUE, TRUE, 0);
     gtk_widget_show_all(dialog);
 
+    // Verificando a resposta do usuário
+    gint resultdialog = gtk_dialog_run(GTK_DIALOG(dialog));
+
+    if (resultdialog == GTK_RESPONSE_CANCEL) {
+        gtk_widget_destroy(dialog);
+        return 0;
+    }
+
     // Esperando a resposta do usuário
-    if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK) {
+    if (resultdialog == GTK_RESPONSE_OK) {
         result = atoi(gtk_entry_get_text(GTK_ENTRY(entry)));
     }
     gtk_widget_destroy(dialog);
-
+    
     return result;
 }
 
@@ -48,9 +56,17 @@ void update_values(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     quantidade = get_input_value("Enter quantidade");
+    if (quantidade == 0)
+        return;
     tilew = get_input_value("Enter tile width");
+    if (tilew == 0)
+        return;
     tileh = get_input_value("Enter tile heigth");
+    if (tileh == 0)
+        return;
     kernel = get_input_value("Enter kernel size");
+    if (kernel == 0)
+        return;
 }
 
 // Função para exibir uma imagem RGB em uma janela GTK
@@ -80,7 +96,13 @@ void clahe_click(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     tileh = get_input_value("Enter tile heigth");
+    if (tileh == 0){
+        return;
+    }
     tilew = get_input_value("Enter tile width");
+    if (tilew == 0){
+        return;
+    }
     addInicioDuplamente_RGB(&current_image, clahe_rgb(current_image->image, tilew, tileh));
     show_image_rgb(current_image->image, image_widget);
     update_navigation_buttons(current_image);
@@ -106,6 +128,11 @@ void blur_click(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     kernel = get_input_value("Enter kernel size");
+
+    if (kernel == 0){
+        return;
+    }
+
     if (kernel % 2 == 0) {
         kernel++;
     }
@@ -118,6 +145,8 @@ void random_click(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     update_values(widget, data);
+    if (quantidade == 0 || tilew == 0 || tileh == 0 || kernel == 0)
+        return;
     srand(time(NULL));
     int i, res;
     ImageRGB *tempImage = current_image->image;
@@ -336,7 +365,11 @@ void clahe_click_gray(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     tileh = get_input_value("Enter tile heigth");
+    if (tileh == 0)
+        return;
     tilew = get_input_value("Enter tile width");
+    if (tilew == 0)
+        return;
     addInicioDuplamente_Gray(&current_image_gray, clahe_gray(current_image_gray->image, tilew, tileh));
     show_image_gray(current_image_gray->image, image_widget_gray);
     update_navigation_buttons_gray(current_image_gray);
@@ -362,6 +395,10 @@ void blur_click_gray(GtkWidget *widget, gpointer data) {
     (void) widget;
     (void) data;
     kernel = get_input_value("Enter kernel size");
+    if (kernel == 0){
+        return;
+    }
+
     if (kernel % 2 == 0) {
         kernel++;
     }
@@ -670,8 +707,11 @@ void show_main_interface() {
     g_object_set(settings, "gtk-application-prefer-dark-theme", TRUE, NULL);
     GtkWidget *window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window), "Interface principal");
+
     gtk_window_set_default_size(GTK_WINDOW(window), 400, 200);
     gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+
+    g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 
     GtkWidget *main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
