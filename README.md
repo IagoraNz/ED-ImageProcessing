@@ -43,35 +43,35 @@ The objective of this project is to develop a solution for image manipulation th
 ```
 git clone https://github.com/IagoraNz/ED-ImageProcessing
 ```
-3. GCC
+2. GCC
 ```
 sudo apt install build-essential
 ```
-5. Meson
+3. Meson
 ```
 sudo apt-get -y install meson
 ```
-6. Ninja
+4. Ninja
 ```
 sudo apt-get -y install ninja-build
 ```
-8. GTK
+5. GTK
 ```
 sudo apt-get -y install libgtk-3-dev
 ```
-9. Bib-Gtk
+6. Bib-Gtk
 ```
 sudo apt-get install libgdk-pixbuf2.0-dev
 ```
-11. setup
+7. setup
 ```
 meson setup builddir
 ```
-12. build
+8. build
 ```
 ninja -C builddir
 ```
-14. run
+9. run
 ```
 cd builddir
 ./main
