@@ -152,7 +152,7 @@ void random_click(GtkWidget *widget, gpointer data) {
     ImageRGB *tempImage = current_image->image;
     for(i = 0; i < quantidade; i++){
         res = rand() % 5 + 1;
-        tempImage = randomicoRGB(tempImage, res, tilew, tileh, kernel);
+        tempImage = randomicoRGB(tempImage, res, tilew, tileh, kernel % 2 == 0 ? kernel++ : kernel);
         addInicioDuplamente_RGB(&current_image, tempImage);
     }
 
@@ -414,7 +414,7 @@ void random_click_gray(GtkWidget *widget, gpointer data) {
     ImageGray *tempImage = current_image_gray->image;
     for(i = 0; i < quantidade; i++) {
         res = rand() % 5 + 1;
-        tempImage = randomicoGray(tempImage, res, tilew, tileh, kernel);
+        tempImage = randomicoGray(tempImage, res, tilew, tileh, kernel % 2 == 0 ? kernel++ : kernel);
         addInicioDuplamente_Gray(&current_image_gray, tempImage);
     }
 
